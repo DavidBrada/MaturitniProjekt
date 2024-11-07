@@ -2,11 +2,17 @@
 #include <iostream>
 #include "GameLogic.h"
 #include "Player.h"
+#include "World.h"
+#include "Tile.h"
 
 int main()
 {
   GameLogic gameLogic;
   gameLogic.InitializeSettings();
+
+  World gameWorld;
+
+  gameWorld.InitiateGrid(gameLogic.windowWidth, gameLogic.windowHeight);
 
   sf::RenderWindow window(sf::VideoMode(gameLogic.windowWidth, gameLogic.windowHeight), "Game window", sf::Style::Default, gameLogic.settings);
   window.setFramerateLimit(60);
@@ -90,6 +96,7 @@ int main()
     // Draw stuff here
     window.draw(ground);
     player.Draw(window);
+    gameWorld.Draw(window);
 
     window.display();
   }
