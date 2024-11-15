@@ -4,7 +4,7 @@ class Player
 {
 private:
   const int width = 60;
-  const int height = 160;
+  const int height = 180;
 
   const float gravityAcceleration = 0.05f;
   const int maxGravity = 2;

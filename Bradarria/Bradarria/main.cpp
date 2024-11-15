@@ -2,7 +2,6 @@
 #include <iostream>
 #include "GameLogic.h"
 #include "Player.h"
-#include "World.h"
 #include "Tile.h"
 
 int main()
@@ -10,13 +9,20 @@ int main()
   GameLogic gameLogic;
   gameLogic.InitializeSettings();
 
-  World gameWorld;
-
-  gameWorld.InitiateGrid(gameLogic.windowWidth, gameLogic.windowHeight);
-
   sf::RenderWindow window(sf::VideoMode(gameLogic.windowWidth, gameLogic.windowHeight), "Game window", sf::Style::Default, gameLogic.settings);
   window.setFramerateLimit(60);
   window.setKeyRepeatEnabled(false);
+
+  //----------------------TEMPORARY TEST TILE(S)-------------------------
+  std::vector<Tile> tileList;
+  Tile placeholderTile;
+  placeholderTile.Initialize();
+  placeholderTile.body.setFillColor(sf::Color::Transparent);
+  placeholderTile.body.setOutlineThickness(5);
+  placeholderTile.body.setOutlineColor(sf::Color::Magenta);
+
+  Tile placedTile;
+  //-----------------------------------------------
 
   // Camera setup
   sf::View view(sf::Vector2f(0.f, 0.f), sf::Vector2f(gameLogic.xDefaultZoom, gameLogic.yDefaultZoom));
@@ -59,6 +65,20 @@ int main()
           player.yVel = 0;
           player.yVel = -2;
           std::cout << "Jump!" << std::endl;
+
+          //--------- JUST FOR DEBUGGING, DELETE LATER ----------------
+          for (Tile tile : tileList)
+          {
+            std::cout << "x: " << tile.body.getPosition().x << std::endl << "y: " << tile.body.getPosition().y << std::endl;
+          }
+          //-----------------------------------------------------------
+        }
+
+        // Block selecting and overriding section will be here
+
+        if (event.key.scancode == sf::Keyboard::Scan::Num1)
+        {
+          placeholderTile.body.setOutlineColor(sf::Color::Cyan);
         }
         break;
        
@@ -79,24 +99,40 @@ int main()
       }
     }
 
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    {
+      placedTile.Place(placeholderTile.position);
+      tileList.push_back(placedTile);
+    }
+
     // Debug logging
     //std::cout << "Velocity: " << player.xVel << std::endl;
     //std::cout << "gravity: " << player.currentGravity << std::endl;
     //std::cout << "grounded: " << isGrounded << std::endl;
+    //std::cout << view.getSize().x << std::endl
+    //std::cout << sf::Mouse::getPosition().x << std::endl;
 
-    //std::cout << view.getSize().x << std::endl;
+    sf::Vector2f mouseCoord = window.mapPixelToCoords(gameLogic.mousePosition);
+
+    placeholderTile.Update(window, view, gameLogic.mousePosition);
 
     player.Update(groundBoundingBox, gameLogic.deltaTime);
 
-    view.setCenter(sf::Vector2f(player.body.getPosition().x, window.getSize().y / 2));
+    view.setCenter(sf::Vector2f(player.body.getPosition().x, (window.getSize().y / 2) - 200));
 
     window.clear();
     window.setView(view);
 
     // Draw stuff here
     window.draw(ground);
+
+    for (int i = 0; i < tileList.size(); i++)
+    {
+      window.draw(tileList[i].body);
+    }
+
     player.Draw(window);
-    gameWorld.Draw(window);
+    window.draw(placeholderTile.body);
 
     window.display();
   }

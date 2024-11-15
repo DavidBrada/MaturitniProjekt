@@ -1,12 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <vector>
+#include "Tile.h"
 
 class GameLogic
 {
 public:
   void InitializeSettings();
   
-  float deltaTime;
+  float deltaTime{};
 
   int windowWidth = 1024;
   int windowHeight = 576;
@@ -18,6 +20,11 @@ public:
   int zoomLevel = 1; // Keeps track of number of zoom level changes (bigger value for broader view)
   int maxZoomLevel = 3;
   int minZoomLevel = 0;
+
+  // --------------- MOVE TO World.cpp once created --------------------------------
+  // 
+
+  sf::Vector2i mousePosition{};
 
   sf::ContextSettings settings;
 
