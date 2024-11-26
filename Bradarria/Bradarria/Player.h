@@ -3,11 +3,11 @@
 class Player
 {
 private:
-  const int width = 60;
+  const int width = 90;
   const int height = 180;
 
-  const float gravityAcceleration = 0.05f;
-  const int maxGravity = 2;
+  const int gravityAcceleration = 25;
+  const int maxGravity = 500;
 
 public:
   sf::FloatRect groundCheck;
@@ -15,15 +15,15 @@ public:
   sf::RectangleShape body;
   sf::FloatRect hitBox;
 
-  float moveSpeed = 1;
+  float moveSpeed = 1000;
   bool isGrounded {};
-  float currentGravity;
-  float xVel;
-  float yVel;
+  int currentGravity;
+  float xVel{};
+  float yVel{};
 
 public:
   void Initialize();
   void Load(int xPosition, int yPosition);
-  void Update(sf::FloatRect& ground, float deltaTime);
+  void Update(sf::FloatRect& ground, double deltaTime);
   void Draw(sf::RenderWindow& window);
 };

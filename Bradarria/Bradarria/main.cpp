@@ -1,8 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+
 #include "GameLogic.h"
 #include "Player.h"
 #include "Tile.h"
+#include "World.h"
 
 int main()
 {
@@ -24,8 +26,13 @@ int main()
   Tile placedTile;
   //-----------------------------------------------
 
+  // --------------------Tilesheet Test-------------------------------
+  World world;
+  world.Initialize();
+  //-------------------------------------------------------
+
   // Camera setup
-  sf::View view(sf::Vector2f(0.f, 0.f), sf::Vector2f(gameLogic.xDefaultZoom, gameLogic.yDefaultZoom));
+  sf::View view(sf::Vector2f(0, 0), sf::Vector2f(gameLogic.xDefaultZoom, gameLogic.yDefaultZoom));
 
   // Ground placeholder object
   sf::RectangleShape ground(sf::Vector2f(2000.f, 200.f));
@@ -46,9 +53,9 @@ int main()
   while (window.isOpen())
   {
     sf::Time deltaTimer = deltaTimeClock.restart();
-    gameLogic.deltaTime = deltaTimer.asMilliseconds();
+    gameLogic.deltaTime = deltaTimer.asSeconds();
 
-    //std::cout << "Delta time: " << gameLogic.deltaTime << std::endl;
+    
 
     sf::Event event;
     while (window.pollEvent(event))
@@ -63,15 +70,17 @@ int main()
         if (event.key.scancode == sf::Keyboard::Scan::Space && player.isGrounded)
         {
           player.yVel = 0;
-          player.yVel = -2;
+          player.yVel = -2000;
           std::cout << "Jump!" << std::endl;
 
+          /*
           //--------- JUST FOR DEBUGGING, DELETE LATER ----------------
           for (Tile tile : tileList)
           {
             std::cout << "x: " << tile.body.getPosition().x << std::endl << "y: " << tile.body.getPosition().y << std::endl;
           }
           //-----------------------------------------------------------
+          */
         }
 
         // Block selecting and overriding section will be here
@@ -111,11 +120,12 @@ int main()
     //std::cout << "grounded: " << isGrounded << std::endl;
     //std::cout << view.getSize().x << std::endl
     //std::cout << sf::Mouse::getPosition().x << std::endl;
+    std::cout << "Delta time: " << gameLogic.deltaTime << std::endl;
 
     sf::Vector2f mouseCoord = window.mapPixelToCoords(gameLogic.mousePosition);
 
     placeholderTile.Update(window, view, gameLogic.mousePosition);
-
+    world.Update(gameLogic.deltaTime);
     player.Update(groundBoundingBox, gameLogic.deltaTime);
 
     view.setCenter(sf::Vector2f(player.body.getPosition().x, (window.getSize().y / 2) - 200));
@@ -124,6 +134,7 @@ int main()
     window.setView(view);
 
     // Draw stuff here
+    world.Draw(window);
     window.draw(ground);
 
     for (int i = 0; i < tileList.size(); i++)

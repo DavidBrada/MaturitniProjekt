@@ -26,7 +26,7 @@ void Player::Load(int xPosition, int yPosition)
   body.setFillColor(sf::Color::Blue);
 }
 
-void Player::Update(sf::FloatRect& ground, float deltaTime)
+void Player::Update(sf::FloatRect& ground, double deltaTime)
 {
   // Ground check
   if (!groundCheck.intersects(ground))

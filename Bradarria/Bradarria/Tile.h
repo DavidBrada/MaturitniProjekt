@@ -5,8 +5,9 @@
 class Tile
 {
 private:
-  int width = 60;
-  int height = 60;
+  // 1 Tile has a side 18 pixels long and the tiles are scaled by 5, that's why it's 90
+  int width = 90;
+  int height = 90;
 
 public:
   sf::Vector2f position{};
