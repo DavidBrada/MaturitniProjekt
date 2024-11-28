@@ -137,18 +137,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GameLogic.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="World.cpp" />
+    <ClCompile Include="src\WorldLoader.cpp" />
+    <ClCompile Include="src\GameLogic.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\Tile.cpp" />
+    <ClCompile Include="src\World.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameLogic.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Tile.h" />
-    <ClInclude Include="World.h" />
-    <ClInclude Include="WorldTile.h" />
+    <ClInclude Include="src\WorldLoader.h" />
+    <ClInclude Include="src\GameLogic.h" />
+    <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\Tile.h" />
+    <ClInclude Include="src\World.h" />
+    <ClInclude Include="src\WorldTile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

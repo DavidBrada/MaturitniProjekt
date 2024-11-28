@@ -5,9 +5,11 @@
 #include "Player.h"
 #include "Tile.h"
 #include "World.h"
+#include "WorldLoader.h"
 
 int main()
 {
+
   GameLogic gameLogic;
   gameLogic.InitializeSettings();
 
@@ -39,6 +41,10 @@ int main()
   ground.setPosition(-150, 400);
   sf::FloatRect groundBoundingBox = ground.getGlobalBounds();
   ground.setFillColor(sf::Color(0, 200, 0));
+
+  // World loader
+  WorldLoader worldLoader;
+  worldLoader.Load("assets/world_saves/world_1.world");
 
   // Player object
   Player player;
@@ -120,7 +126,7 @@ int main()
     //std::cout << "grounded: " << isGrounded << std::endl;
     //std::cout << view.getSize().x << std::endl
     //std::cout << sf::Mouse::getPosition().x << std::endl;
-    std::cout << "Delta time: " << gameLogic.deltaTime << std::endl;
+    //std::cout << "Delta time: " << gameLogic.deltaTime << std::endl;
 
     sf::Vector2f mouseCoord = window.mapPixelToCoords(gameLogic.mousePosition);
 

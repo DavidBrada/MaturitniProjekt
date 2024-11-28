@@ -1,0 +1,9 @@
+[World]
+tilesheet="C:/Users/david/Desktop/New folder/VisualStudioSolutions/Bradarria/Bradarria/Assets/World/tilemap_packed.png"
+name=world_1
+tile-width=18
+tile-height=18
+scale-x=5
+scaly-y=5
+
+data=0, 0, 1, 9, 9, 7
