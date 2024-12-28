@@ -1,24 +1,32 @@
 #include "World.h"
 
 World::World() : 
-  tileWidth(18), tileHeight(18), totalTilesX(0), totalTilesY(0),
-  totalTiles(0), worldWidth(3), worldHeight(2), tiles(nullptr)
+  totalTilesX(0), totalTilesY(0),
+  totalTiles(0), tiles(nullptr), worldSprites(nullptr)
 {
 }
 
 World::~World()
 {
+  delete[] worldSprites;
+  delete[] tiles;
 }
 
-void World::Initialize()
+void World::Initialize(std::string fileName)
 {
-  if (tileSheetTexture.loadFromFile("assets/world_textures/tilemap_packed.png"))
-  {
-    totalTilesX = tileSheetTexture.getSize().x / tileWidth;
-    totalTilesY = tileSheetTexture.getSize().y / tileHeight;
+  // World loader
 
-    std::cout << totalTilesX << std::endl;
-    std::cout << totalTilesY << std::endl;
+  worldLoader.Load(fileName, wd);
+
+  worldSprites = new sf::Sprite[wd.dataLength];
+
+  if (tileSheetTexture.loadFromFile(wd.tilesheet))
+  {
+    totalTilesX = tileSheetTexture.getSize().x / wd.tileWidth;
+    totalTilesY = tileSheetTexture.getSize().y / wd.tileHeight;
+
+    //std::cout << totalTilesX << std::endl;
+    //std::cout << totalTilesY << std::endl;
 
     std::cout << "Tilesheet loaded." << std::endl;
     
@@ -34,7 +42,7 @@ void World::Initialize()
         int i = x + y * totalTilesX;
 
         tiles[i].id = i;
-        tiles[i].position = sf::Vector2i(x * tileWidth, y * tileHeight);
+        tiles[i].position = sf::Vector2i(x * wd.tileWidth, y * wd.tileHeight);
       }
     }
 
@@ -45,23 +53,23 @@ void World::Initialize()
   }
 
 
-  for (int y = 0; y < worldHeight; y++)
+  for (int y = 0; y < wd.worldHeight; y++)
   {
-    for (int x = 0; x < worldWidth; x++)
+    for (int x = 0; x < wd.worldWidth; x++)
     {
-      int i = x + y * worldWidth;
+      int i = x + y * wd.worldWidth;
 
-      int index = mapNumbers[i];
+      int index = wd.data[i];
 
-      mapSprites[i].setTexture(tileSheetTexture);
-      mapSprites[i].setTextureRect(sf::IntRect(
+      worldSprites[i].setTexture(tileSheetTexture);
+      worldSprites[i].setTextureRect(sf::IntRect(
         tiles[index].position.x,
         tiles[index].position.y,
-        tileWidth,
-        tileHeight
+        wd.tileWidth,
+        wd.tileHeight
       ));
-      mapSprites[i].setScale(sf::Vector2f(worldScale, worldScale));
-      mapSprites[i].setPosition(sf::Vector2f(x * tileWidth * worldScale, y * tileHeight * worldScale));
+      worldSprites[i].setScale(sf::Vector2f(wd.xScale, wd.yScale));
+      worldSprites[i].setPosition(sf::Vector2f(x * wd.tileWidth * wd.xScale, y * wd.tileHeight * wd.yScale));
     }
   }
 }
@@ -72,8 +80,8 @@ void World::Update(double deltaTime)
 
 void World::Draw(sf::RenderWindow& window)
 {
-  for (int i = 0; i < worldSize; i++)
+  for (int i = 0; i < wd.dataLength; i++)
   {
-    window.draw(mapSprites[i]);
+    window.draw(worldSprites[i]);
   }
 }

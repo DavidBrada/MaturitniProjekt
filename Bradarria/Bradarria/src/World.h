@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "WorldTile.h"
+#include "WorldLoader.h"
+#include "WorldData.h"
 
 class World
 {
@@ -10,33 +12,21 @@ class World
 
   WorldTile* tiles;
 
-  int totalTiles;
+  WorldLoader worldLoader;
+  WorldData wd;
 
-  int tileWidth;
-  int tileHeight;
+  int totalTiles;
 
   int totalTilesX;
   int totalTilesY;
 
-  int worldScale = 5;
-
-   int worldWidth; // How many tiles on X
-   int worldHeight; // How many tiles on Y
-   static const int worldSize = 6; // Total tiles in the world
-
-  int mapNumbers[worldSize] = {
-    0, 0, 1,
-    9, 9, 7
-
-  };
-
-  sf::Sprite mapSprites[6];
+  sf::Sprite* worldSprites;
 
 public:
   World();
   ~World();
 
-  void Initialize();
+  void Initialize(std::string fileName);
   void Update(double deltaTime);
   void Draw(sf::RenderWindow& window);
 };

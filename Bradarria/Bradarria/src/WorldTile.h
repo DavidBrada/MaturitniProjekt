@@ -9,4 +9,6 @@ struct WorldTile
   
   //sf::IntRect rect;
   //sf::Sprite sprite; // Objects don't need an inicialization, because the default constructor will be called
+
+
 };

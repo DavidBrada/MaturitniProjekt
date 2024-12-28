@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Grid.cpp" />
     <ClCompile Include="src\WorldLoader.cpp" />
     <ClCompile Include="src\GameLogic.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -145,6 +146,8 @@
     <ClCompile Include="src\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Grid.h" />
+    <ClInclude Include="src\WorldData.h" />
     <ClInclude Include="src\WorldLoader.h" />
     <ClInclude Include="src\GameLogic.h" />
     <ClInclude Include="src\Player.h" />

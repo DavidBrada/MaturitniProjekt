@@ -33,7 +33,7 @@ void Tile::Place(sf::Vector2f position)
   body.setPosition(position);
   Initialize();
 
-  std::cout << "Tile placed!" << std::endl;
+  //std::cout << "Tile placed!" << std::endl;
 }
 
 Tile::Tile(){}

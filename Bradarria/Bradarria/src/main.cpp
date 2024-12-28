@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "Tile.h"
 #include "World.h"
-#include "WorldLoader.h"
+#include "Grid.h"
 
 int main()
 {
@@ -30,7 +30,7 @@ int main()
 
   // --------------------Tilesheet Test-------------------------------
   World world;
-  world.Initialize();
+  world.Initialize("assets/world_saves/world_1.world");
   //-------------------------------------------------------
 
   // Camera setup
@@ -42,9 +42,10 @@ int main()
   sf::FloatRect groundBoundingBox = ground.getGlobalBounds();
   ground.setFillColor(sf::Color(0, 200, 0));
 
-  // World loader
-  WorldLoader worldLoader;
-  worldLoader.Load("assets/world_saves/world_1.world");
+  //--------------GRID--------------------------
+  Grid grid;
+  grid.Initialize();
+  //--------------------------------------------
 
   // Player object
   Player player;
@@ -61,7 +62,6 @@ int main()
     sf::Time deltaTimer = deltaTimeClock.restart();
     gameLogic.deltaTime = deltaTimer.asSeconds();
 
-    
 
     sf::Event event;
     while (window.pollEvent(event))
@@ -150,6 +150,7 @@ int main()
 
     player.Draw(window);
     window.draw(placeholderTile.body);
+    grid.Draw(window);
 
     window.display();
   }
