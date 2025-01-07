@@ -9,9 +9,11 @@ class UI
   sf::Font font;
   sf::Text gridInfoText;
   sf::Text uiText;
+  sf::Text controlsText;
 
 public:
   bool visible = true;
+  float timeStep = 0.1f; // Time step of UI in seconds
 
 public:
   void Initialize();

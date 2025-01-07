@@ -1,4 +1,4 @@
-#include "WorldGrid.h"
+﻿#include "WorldGrid.h"
 
 
 void WorldGrid::Initialize()
@@ -11,17 +11,18 @@ void WorldGrid::Initialize()
     for (int y = 0; y < mapHeight; y++)
     {
       tileMap[x][y].shape.setSize(sf::Vector2f(tileSize, tileSize));
-      tileMap[x][y].shape.setOutlineThickness(1.f);
+      tileMap[x][y].shape.setOutlineThickness(1.5f);
       tileMap[x][y].shape.setOutlineColor(sf::Color(150, 150, 150));
       tileMap[x][y].shape.setPosition(x * tileSize, y * tileSize);
       
+      // Tile generation conditions
       if (y < 25)
       {
         tileMap[x][y].shape.setFillColor(sf::Color::Cyan);
         tileMap[x][y].hasCollision = false;
         tileMap[x][y].type = 0;
       }
-
+      //if the y values is within a specific range and the tile has air above it, grass is generated
       else if (y >= 25 && tileMap[x][y - 1].type == 0)
       {
         tileMap[x][y].shape.setFillColor(sf::Color::Green);
@@ -42,20 +43,22 @@ void WorldGrid::ChangeTile(int selectedType)
 {
   Tile& hoveredTile = tileMap[mousePosGrid.x][mousePosGrid.y];
 
-  if (selectedType == 0)
+  switch (selectedType)
   {
+  case 0:
     hoveredTile.hasCollision = false;
     hoveredTile.shape.setFillColor(sf::Color::Cyan);
-  }
-  else if (selectedType == 1)
-  {
+    break;
+
+  case 1:
     hoveredTile.hasCollision = true;
     hoveredTile.shape.setFillColor(sf::Color::Green);
-  }
-  else if(selectedType == 2)
-  {
+    break;
+    
+  case 2:
     hoveredTile.hasCollision = true;
     hoveredTile.shape.setFillColor(sf::Color(139, 69, 19));
+    break;
   }
 
   hoveredTile.type = selectedType;
@@ -87,10 +90,11 @@ void WorldGrid::Update(sf::RenderWindow& window)
 
 void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
 {
-  fromX = view.getCenter().x / tileSize - 27; // 27
-  toX = view.getCenter().x / tileSize + 28; // 28
-  fromY = view.getCenter().y / tileSize - 15; // 15
-  toY = view.getCenter().y / tileSize + 16; // 16
+  // Ensures that only visible tiles are rendered
+  fromX = view.getCenter().x / tileSize - 27;
+  toX = view.getCenter().x / tileSize + 28;
+  fromY = view.getCenter().y / tileSize - 15;
+  toY = view.getCenter().y / tileSize + 16;
 
 #pragma region TileRenderConditions
 

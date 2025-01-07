@@ -3,16 +3,18 @@
 #include "WorldGrid.h"
 #include "TileSelector.h"
 #include "UI.h"
+#include "Player.h"
 
 int main()
 {
   float dt = 0.f;
   sf::Clock dtClock;
+  sf::Clock uiClock; // updates UI
 
   // Mouse position relative to the screen; used for debugging
   sf::Vector2i mousePosScreen = sf::Mouse::getPosition();
 
-  sf::RenderWindow window(sf::VideoMode(1920, 1080), "GRID");
+  sf::RenderWindow window(sf::VideoMode(1920, 1080), "TILEMAP", sf::Style::Fullscreen);
   window.setFramerateLimit(60);
   window.setKeyRepeatEnabled(false);
 
@@ -20,17 +22,18 @@ int main()
   WorldGrid worldGrid;
   TileSelector tileSelector;
   UI ui;
-
+  Player player;
   sf::View view;
 
-  //Initialize game objects
+  view.setSize(1920.f, 1080.f);
+  view.setCenter(sf::Vector2f(worldGrid.mapWidth / 2 * worldGrid.tileSize, worldGrid.mapHeight / 2 * worldGrid.tileSize)); // Initializes player view in the middle of the whole tilemap
+  float viewSpeed = 400.f; // movement speed of the camera
+
+  // Initialize game objects
   worldGrid.Initialize();
   tileSelector.Initialize(worldGrid);
   ui.Initialize();
-  
-  view.setSize(1920.f, 1080.f);
-  view.setCenter(sf::Vector2f(worldGrid.mapWidth / 2 * worldGrid.tileSize, worldGrid.mapHeight / 2 * worldGrid.tileSize)); // Initializes player view in the middle of the whole tilemap
-  float viewSpeed = 200.f; // movement speed of the camera
+  player.Initialize(view.getCenter().x, view.getCenter().y);
   
 
   while (window.isOpen())
@@ -47,9 +50,14 @@ int main()
 
     //Update Game
     tileSelector.Update(worldGrid);
+    player.Update(dt, worldGrid);
 
     // Update UI
-    ui.Update(worldGrid, tileSelector);
+    if (uiClock.getElapsedTime().asSeconds() > ui.timeStep)
+    {
+      ui.Update(worldGrid, tileSelector);
+      uiClock.restart();
+    }
 
     sf::Event event;
     while (window.pollEvent(event))
@@ -74,6 +82,10 @@ int main()
             ui.visible = true;
           }
         }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+          window.close();
+        }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
         {
@@ -97,27 +109,6 @@ int main()
       }
     }
 
-    // Get Input
-#pragma region MovementInput
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-    {
-      view.move(-viewSpeed * dt, 0.f);
-    }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-    {
-      view.move(viewSpeed * dt, 0.f);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-    {
-      view.move(0.f, -viewSpeed * dt);
-    }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-    {
-      view.move(0.f, viewSpeed * dt);
-    }
-#pragma endregion
-
 
 #pragma region Rendering
 
@@ -128,6 +119,14 @@ int main()
 
     worldGrid.Render(window, view);
     window.draw(tileSelector.selectorBody);
+    
+    // Collision visualisation
+    window.draw(player.testRect);
+    window.draw(player.rayRect);
+    window.draw(player.contactPointVisual);
+    window.draw(player.contactNormalLine, 2, sf::Lines);
+    window.draw(player.rayVisual, 2, sf::Lines);
+    window.draw(player.body);
 
     // Render UI
     window.setView(window.getDefaultView());

@@ -7,4 +7,3 @@ struct Tile
   sf::RectangleShape shape;
   bool hasCollision;
 };
-
