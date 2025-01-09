@@ -21,7 +21,6 @@ void Player::Load()
 
 void Player::Update(float deltaTime, WorldGrid worldGrid)
 {
-  body.setOrigin(sf::Vector2f(0.5f, 0.5f));
   sf::Vector2f rayOrigin = sf::Vector2f(body.getPosition().x + body.getSize().x / 2, body.getPosition().y + body.getSize().y / 2);
   sf::Vector2f rayDirection = velocity * 20.f;
 
@@ -86,10 +85,11 @@ bool Player::IsColliding(const sf::RectangleShape& in, const sf::RectangleShape&
 
   if (RayTest(sf::Vector2f(in.getPosition().x + in.getSize().x / 2, in.getPosition().y + in.getSize().y / 2), velocity * fElapsedTime, expandedTarget, contactPoint, contactNormal, contactTime))
   {
-    if (contactTime < 1) return true;
+    if (contactTime < 1.0f && contactTime >= 0.0f) return true;
   }
 
   return false;
+
 }
 
 bool Player::RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& t_hit_near)
