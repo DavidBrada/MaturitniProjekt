@@ -33,7 +33,7 @@ int main()
   worldGrid.Initialize();
   tileSelector.Initialize(worldGrid);
   ui.Initialize();
-  player.Initialize(view.getCenter().x, view.getCenter().y);
+  player.Initialize(view.getCenter().x, view.getCenter().y - 4 * worldGrid.tileSize, worldGrid);
   
 
   while (window.isOpen())
@@ -55,7 +55,7 @@ int main()
     // Update UI
     if (uiClock.getElapsedTime().asSeconds() > ui.timeStep)
     {
-      ui.Update(worldGrid, tileSelector);
+      ui.Update(worldGrid, tileSelector, player);
       uiClock.restart();
     }
 
@@ -71,7 +71,21 @@ int main()
         break;
 
       case sf::Event::KeyPressed:
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        {
+          if (player.grounded && !player.jumping)
+          {
+            player.jumpCooldown.restart();
+            player.jumping = true;
+            player.velocity.y = 0.f;
+
+            //player.body.move(0.f, -player.jumpForce);
+            //player.velocity.y -= sqrtf(2.0f * 981.f * player.jumpForce);
+            player.velocity.y -= player.jumpForce;
+          }
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
         {
           if (ui.visible)
           {
@@ -104,7 +118,7 @@ int main()
       case sf::Event::MouseButtonPressed:
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
-          worldGrid.ChangeTile(tileSelector.selectedType);
+          worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
         }
       }
     }
@@ -119,13 +133,8 @@ int main()
 
     worldGrid.Render(window, view);
     window.draw(tileSelector.selectorBody);
+    player.Draw(window, worldGrid);
     
-    // Collision visualisation
-    window.draw(player.testRect);
-    window.draw(player.rayRect);
-    window.draw(player.contactPointVisual);
-    window.draw(player.contactNormalLine, 2, sf::Lines);
-    window.draw(player.rayVisual, 2, sf::Lines);
     window.draw(player.body);
 
     // Render UI

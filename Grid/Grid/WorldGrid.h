@@ -24,12 +24,19 @@ struct WorldGrid
   int fromY = 0;
   int toY = 0;
 
-  void ChangeTile(int selectedTtype);
+  void PlaceTile(int type, int xPos, int yPos);
 
   void Initialize();
   void Update(sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, sf::View& view);
 
   std::string blocks[3] = {"air", "grass", "dirt"}; // Hardcoded block count, change later
+
+  enum blockTypes
+  {
+    air,
+    grass,
+    dirt
+  };
 };
 

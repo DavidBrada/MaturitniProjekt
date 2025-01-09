@@ -18,51 +18,21 @@ void WorldGrid::Initialize()
       // Tile generation conditions
       if (y < 25)
       {
-        tileMap[x][y].shape.setFillColor(sf::Color::Cyan);
-        tileMap[x][y].hasCollision = false;
-        tileMap[x][y].type = 0;
+        PlaceTile(air, x, y);
       }
       //if the y values is within a specific range and the tile has air above it, grass is generated
       else if (y >= 25 && tileMap[x][y - 1].type == 0)
       {
-        tileMap[x][y].shape.setFillColor(sf::Color::Green);
-        tileMap[x][y].hasCollision = true;
-        tileMap[x][y].type = 1;
+        PlaceTile(grass, x, y);
       }
       else
       {
-        tileMap[x][y].shape.setFillColor(sf::Color(139, 69, 19));
-        tileMap[x][y].hasCollision = true;
-        tileMap[x][y].type = 2;
+        PlaceTile(dirt, x, y);
       }
     }
   }
 }
 
-void WorldGrid::ChangeTile(int selectedType)
-{
-  Tile& hoveredTile = tileMap[mousePosGrid.x][mousePosGrid.y];
-
-  switch (selectedType)
-  {
-  case 0:
-    hoveredTile.hasCollision = false;
-    hoveredTile.shape.setFillColor(sf::Color::Cyan);
-    break;
-
-  case 1:
-    hoveredTile.hasCollision = true;
-    hoveredTile.shape.setFillColor(sf::Color::Green);
-    break;
-    
-  case 2:
-    hoveredTile.hasCollision = true;
-    hoveredTile.shape.setFillColor(sf::Color(139, 69, 19));
-    break;
-  }
-
-  hoveredTile.type = selectedType;
-}
 
 void WorldGrid::Update(sf::RenderWindow& window)
 {
@@ -86,6 +56,28 @@ void WorldGrid::Update(sf::RenderWindow& window)
   {
     mousePosGrid.y = mapHeight - 1;
   }
+}
+
+void WorldGrid::PlaceTile(int type, int xPos, int yPos)
+{
+  switch (type)
+  {
+  case 0:
+    tileMap[xPos][yPos].hasCollision = false;
+    tileMap[xPos][yPos].shape.setFillColor(sf::Color::Cyan);
+    break;
+
+  case 1:
+    tileMap[xPos][yPos].hasCollision = true;
+    tileMap[xPos][yPos].shape.setFillColor(sf::Color::Green);
+    break;
+
+  case 2:
+    tileMap[xPos][yPos].hasCollision = true;
+    tileMap[xPos][yPos].shape.setFillColor(sf::Color(139, 69, 19));
+    break;
+  }
+  tileMap[xPos][yPos].type = type;
 }
 
 void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)

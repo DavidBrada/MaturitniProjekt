@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "WorldGrid.h"
 #include "TileSelector.h"
+#include "Player.h"
 #include <sstream>
 
 class UI
@@ -10,6 +11,7 @@ class UI
   sf::Text gridInfoText;
   sf::Text uiText;
   sf::Text controlsText;
+  sf::Text playerInfoText;
 
 public:
   bool visible = true;
@@ -17,7 +19,7 @@ public:
 
 public:
   void Initialize();
-  void Update(WorldGrid& worldGrid, TileSelector tileSelector);
+  void Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player);
   void Render(sf::RenderWindow& window);
 };
 
