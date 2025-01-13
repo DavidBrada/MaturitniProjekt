@@ -3,7 +3,7 @@
 
 void TileSelector::Initialize(WorldGrid& worldGrid)
 {
-  selectorBody.setOutlineThickness(4.f);
+  selectorBody.setOutlineThickness(2.f);
   selectorBody.setSize(sf::Vector2f(worldGrid.tileSize - selectorBody.getOutlineThickness() / 2, worldGrid.tileSize - selectorBody.getOutlineThickness() / 2));
   selectorBody.setFillColor(sf::Color::Transparent);
   selectorBody.setOutlineColor(sf::Color::Yellow);

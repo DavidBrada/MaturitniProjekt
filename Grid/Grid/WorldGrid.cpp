@@ -11,17 +11,17 @@ void WorldGrid::Initialize()
     for (int y = 0; y < mapHeight; y++)
     {
       tileMap[x][y].shape.setSize(sf::Vector2f(tileSize, tileSize));
-      tileMap[x][y].shape.setOutlineThickness(1.5f);
-      tileMap[x][y].shape.setOutlineColor(sf::Color(150, 150, 150));
+      //tileMap[x][y].shape.setOutlineThickness(1.5f);
+      //tileMap[x][y].shape.setOutlineColor(sf::Color(150, 150, 150));
       tileMap[x][y].shape.setPosition(x * tileSize, y * tileSize);
       
       // Tile generation conditions
-      if (y < 25)
+      if (y < groundLevel)
       {
         PlaceTile(air, x, y);
       }
       //if the y values is within a specific range and the tile has air above it, grass is generated
-      else if (y >= 25 && tileMap[x][y - 1].type == 0)
+      else if (y >= groundLevel && tileMap[x][y - 1].type == 0)
       {
         PlaceTile(grass, x, y);
       }
@@ -83,10 +83,10 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos)
 void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
 {
   // Ensures that only visible tiles are rendered
-  fromX = view.getCenter().x / tileSize - 27;
-  toX = view.getCenter().x / tileSize + 28;
-  fromY = view.getCenter().y / tileSize - 15;
-  toY = view.getCenter().y / tileSize + 16;
+  fromX = view.getCenter().x / tileSize - 60;
+  toX = view.getCenter().x / tileSize + 61;
+  fromY = view.getCenter().y / tileSize - 34;
+  toY = view.getCenter().y / tileSize + 35;
 
 #pragma region TileRenderConditions
 

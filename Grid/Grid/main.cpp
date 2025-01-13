@@ -21,20 +21,19 @@ int main()
   //Create game objects
   WorldGrid worldGrid;
   TileSelector tileSelector;
-  UI ui;
   Player player;
+  UI ui;
   sf::View view;
 
-  view.setSize(1920.f, 1080.f);
-  view.setCenter(sf::Vector2f(worldGrid.mapWidth / 2 * worldGrid.tileSize, worldGrid.mapHeight / 2 * worldGrid.tileSize)); // Initializes player view in the middle of the whole tilemap
-  float viewSpeed = 400.f; // movement speed of the camera
 
   // Initialize game objects
   worldGrid.Initialize();
   tileSelector.Initialize(worldGrid);
+  player.Initialize((worldGrid.mapWidth / 2) * worldGrid.tileSize, worldGrid.groundLevel * worldGrid.tileSize - 4 * worldGrid.tileSize, worldGrid);
   ui.Initialize();
-  player.Initialize(view.getCenter().x, view.getCenter().y - 4 * worldGrid.tileSize, worldGrid);
   
+  view.setSize(1920.f, 1080.f);
+  view.setCenter(sf::Vector2f(player.body.getPosition().x + player.width / 2, player.body.getPosition().y + player.height / 2)); // Initializes player view in the middle of the whole tilemap
 
   while (window.isOpen())
   {
@@ -50,15 +49,17 @@ int main()
 
     //Update Game
     tileSelector.Update(worldGrid);
-    player.Update(dt, worldGrid);
+    player.Update(dt, worldGrid, view);
 
     // Update UI
-    if (uiClock.getElapsedTime().asSeconds() > ui.timeStep)
+    ui.Update(worldGrid, tileSelector, player);
+    /*
+    if (uiClock.getElapsedTime().asSeconds() >= ui.timeStep)
     {
       ui.Update(worldGrid, tileSelector, player);
       uiClock.restart();
     }
-
+    */
     sf::Event event;
     while (window.pollEvent(event))
     {
@@ -76,13 +77,7 @@ int main()
         {
           if (player.grounded && !player.jumping)
           {
-            player.jumpCooldown.restart();
-            player.jumping = true;
-            player.velocity.y = 0.f;
-
-            //player.body.move(0.f, -player.jumpForce);
-            //player.velocity.y -= sqrtf(2.0f * 981.f * player.jumpForce);
-            player.velocity.y -= player.jumpForce;
+            player.Jump();
           }
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
@@ -123,7 +118,6 @@ int main()
       }
     }
 
-
 #pragma region Rendering
 
     window.clear();
@@ -134,8 +128,6 @@ int main()
     worldGrid.Render(window, view);
     window.draw(tileSelector.selectorBody);
     player.Draw(window, worldGrid);
-    
-    window.draw(player.body);
 
     // Render UI
     window.setView(window.getDefaultView());

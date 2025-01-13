@@ -25,7 +25,7 @@ void UI::Initialize()
   playerInfoText.setCharacterSize(36);
   playerInfoText.setFillColor(sf::Color::White);
   playerInfoText.setFont(font);
-  playerInfoText.setPosition(1600.f, 800.f);
+  playerInfoText.setPosition(1600.f, 600.f);
   playerInfoText.setString(" NO TEXT ");
 }
 
@@ -53,14 +53,18 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
   ss << "Move: W, S" << std::endl
     << "Jump: SPACE" << std::endl
     << "Select blocks: 1, 2, 3" << std::endl
+    << "Debug info: TAB" << std::endl
     << "Close window: ESC";
   controlsText.setString(ss.str());
   ss.str(std::string());
 
   ss << "Grounded: " << player.grounded << std::endl
-    << "X: " << player.body.getPosition().x / worldGrid.tileSize << std::endl
-    << "Y " << player.body.getPosition().y / worldGrid.tileSize << std::endl
-    << "Gravity: " << player.velocity.y;
+    << "X: " << std::floor((player.body.getPosition().x + player.width) / worldGrid.tileSize) << std::endl
+    << "Y " << std::floor((player.body.getPosition().y + player.height) / worldGrid.tileSize) << std::endl
+    << "Velocity X: " << player.velocity.x << std::endl
+    << "Velocity Y: " << player.velocity.y << std::endl
+    << "Jumping: " << player.jumping << std::endl
+    << "Input vel X: " << player.inputVelocity.x;
   playerInfoText.setString(ss.str());
 }
 
@@ -69,9 +73,9 @@ void UI::Render(sf::RenderWindow& window)
   if (visible)
   {
     window.draw(gridInfoText);
+    window.draw(playerInfoText);
   }
 
   window.draw(uiText);
   window.draw(controlsText);
-  window.draw(playerInfoText);
 }

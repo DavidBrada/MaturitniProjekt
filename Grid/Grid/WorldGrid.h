@@ -10,13 +10,15 @@ struct WorldGrid
 
   std::vector<std::vector<Tile>> tileMap;
 
-  float tileSize = 36.f;
+  float tileSize = 16.f;
   unsigned tileSizeU = static_cast<unsigned>(tileSize);
 
   bool hasCollision = false;
 
-  const int mapWidth = 100;
-  const int mapHeight = 50;
+  const int mapWidth = 200;
+  const int mapHeight = 100;
+
+  int groundLevel = 40;
 
   // Used for culling (rendering optimalization)
   int fromX = 0;
