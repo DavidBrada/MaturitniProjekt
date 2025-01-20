@@ -1,6 +1,8 @@
 #pragma once
+#include <iostream>
 #include "SFML/Graphics.hpp"
 #include "Tile.h"
+#include "AtlasTile.h"
 
 struct WorldGrid
 {
@@ -9,14 +11,18 @@ struct WorldGrid
   sf::Vector2i mousePosWindow;
 
   std::vector<std::vector<Tile>> tileMap;
+  AtlasTile* atlasTiles;
 
   float tileSize = 16.f;
   unsigned tileSizeU = static_cast<unsigned>(tileSize);
 
-  bool hasCollision = false;
-
   const int mapWidth = 200;
   const int mapHeight = 100;
+
+  sf::Texture tileAtlasTexture;
+  int xTileCount;
+  int yTileCount;
+  int tileCount;
 
   int groundLevel = 40;
 
@@ -32,13 +38,13 @@ struct WorldGrid
   void Update(sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, sf::View& view);
 
-  std::string blocks[3] = {"air", "grass", "dirt"}; // Hardcoded block count, change later
+  std::string blocks[3] = {"air", "dirt", "grass"}; // Hardcoded block count, change later
 
   enum blockTypes
   {
     air,
-    grass,
-    dirt
+    dirt,
+    grass
   };
 };
 

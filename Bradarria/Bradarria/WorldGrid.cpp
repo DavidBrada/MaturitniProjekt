@@ -5,15 +5,47 @@ void WorldGrid::Initialize()
 {
   tileMap.resize(mapWidth, std::vector<Tile>());
 
+  if (tileAtlasTexture.loadFromFile("assets/textures/texture_test.png"))
+  {
+    xTileCount = tileAtlasTexture.getSize().x / tileSize;
+    yTileCount = tileAtlasTexture.getSize().y / tileSize;
+
+    std::cout << "Successfully loaded tile atlas." << std::endl;
+
+    tileCount = xTileCount * yTileCount;
+
+    atlasTiles = new AtlasTile[tileCount];
+
+    // Tile atlas loop
+    for (int x = 0; x < xTileCount; x++)
+    {
+      for (int y = 0; y < yTileCount; y++)
+      {
+        int index = x + y * xTileCount;
+
+        atlasTiles[index].id = index;
+        atlasTiles[index].position = sf::Vector2f(x * tileSize, y * tileSize);
+      }
+    }
+  }
+  else
+  {
+    std::cout << "Failed to load tilesheet." << std::endl;
+  }
+
+
+  // World gen
   for (int x = 0; x < mapWidth; x++)
   {
     tileMap[x].resize(mapWidth, Tile());
     for (int y = 0; y < mapHeight; y++)
     {
+      int i = x + y * mapWidth;
+
+
       tileMap[x][y].shape.setSize(sf::Vector2f(tileSize, tileSize));
-      //tileMap[x][y].shape.setOutlineThickness(1.5f);
-      //tileMap[x][y].shape.setOutlineColor(sf::Color(150, 150, 150));
       tileMap[x][y].shape.setPosition(x * tileSize, y * tileSize);
+      tileMap[x][y].position = sf::Vector2f(x * tileSize, y * tileSize);
       
       // Tile generation conditions
       if (y < groundLevel)
@@ -29,6 +61,16 @@ void WorldGrid::Initialize()
       {
         PlaceTile(dirt, x, y);
       }
+
+      tileMap[x][y].sprite.setTexture(tileAtlasTexture);
+      tileMap[x][y].sprite.setTextureRect(sf::IntRect(
+        atlasTiles[tileMap[x][y].type].position.x,
+        atlasTiles[tileMap[x][y].type].position.y,
+        tileSize,
+        tileSize
+      ));
+
+      tileMap[x][y].sprite.setPosition(tileMap[x][y].position);
     }
   }
 }
@@ -64,17 +106,34 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos)
   {
   case 0:
     tileMap[xPos][yPos].hasCollision = false;
-    tileMap[xPos][yPos].shape.setFillColor(sf::Color::Cyan);
+    tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+      atlasTiles[type].position.x,
+      atlasTiles[type].position.y,
+      tileSize,
+      tileSize
+    ));
     break;
 
   case 1:
     tileMap[xPos][yPos].hasCollision = true;
-    tileMap[xPos][yPos].shape.setFillColor(sf::Color::Green);
-    break;
 
+    tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+      atlasTiles[type].position.x,
+      atlasTiles[type].position.y,
+      tileSize,
+      tileSize
+    ));
+    break;
+    
   case 2:
     tileMap[xPos][yPos].hasCollision = true;
-    tileMap[xPos][yPos].shape.setFillColor(sf::Color(139, 69, 19));
+    
+    tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+      atlasTiles[type].position.x,
+      atlasTiles[type].position.y,
+      tileSize,
+      tileSize
+    ));
     break;
   }
   tileMap[xPos][yPos].type = type;
@@ -132,7 +191,7 @@ void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
   {
     for (int y = fromY; y < toY; y++)
     {
-      window.draw(tileMap[x][y].shape);
+      window.draw(tileMap[x][y].sprite);
     }
   }
 }

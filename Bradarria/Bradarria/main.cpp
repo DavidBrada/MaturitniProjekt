@@ -117,10 +117,14 @@ int main()
         }
       }
     }
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type)
+    {
+      worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
+    }
 
 #pragma region Rendering
 
-    window.clear();
+    window.clear(sf::Color(135, 206, 235));
 
     // Render Game Objects
     window.setView(view);

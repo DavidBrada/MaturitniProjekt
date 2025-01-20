@@ -17,6 +17,16 @@ void Player::Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid)
   groundCheckRectRight.setFillColor(sf::Color::Blue);
 
   jumpForce = defaultJumpForce;
+
+  if (texture.loadFromFile("assets/textures/player.png"))
+  {
+    sprite.setTexture(texture);
+    std::cout << "Successfully loaded player texture" << std::endl;
+  }
+  else
+  {
+    std::cout << "Failed to load player texture" << std::endl;
+  }
 }
 
 void Player::Load()
@@ -40,11 +50,15 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
   {
     velocity.x = -moveSpeed;
     inputVelocity.x = -1;
+    sprite.setOrigin(width, 0);
+    sprite.setScale(-1.f, 1.f);
   }
   else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
   {
     velocity.x = moveSpeed;
     inputVelocity.x = 1;
+    sprite.setOrigin(0, 0);
+    sprite.setScale(1.f, 1.f);
   }
   else
   {
@@ -162,6 +176,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
 
   velocity *= deltaTime;
   body.move(velocity);
+  sprite.setPosition(body.getPosition());
   groundCheckRectLeft.setPosition(sf::Vector2f(body.getPosition().x, body.getPosition().y + height));
   groundCheckRectRight.setPosition(sf::Vector2f(body.getPosition().x + body.getSize().x - groundCheckRectRight.getSize().x, body.getPosition().y + height));
 }
@@ -282,7 +297,8 @@ void Player::Draw(sf::RenderWindow& window, WorldGrid& worldGrid)
     }
   }
   */
-  window.draw(body);
+  //window.draw(body);
+  window.draw(sprite);
   /*
   window.draw(groundCheckRectLeft);
   window.draw(groundCheckRectRight);

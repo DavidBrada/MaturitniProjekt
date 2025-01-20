@@ -3,7 +3,7 @@
 
 void UI::Initialize()
 {
-  font.loadFromFile("assets/SegUIVar.ttf");
+  font.loadFromFile("assets/fonts/SegUIVar.ttf");
   gridInfoText.setCharacterSize(24);
   gridInfoText.setFillColor(sf::Color(255, 10, 255));
   gridInfoText.setFont(font);

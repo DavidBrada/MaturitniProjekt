@@ -9,6 +9,8 @@ public:
   int width = 25; // one tile is 16 wide, so it's a little more than one
   int height = 40; //  one tile is 16 tall
   sf::RectangleShape body; // Player object that is displayed
+  sf::Sprite sprite;
+  sf::Texture texture;
   float gravity = 400.f;
   bool colliding;
 
@@ -21,7 +23,7 @@ public:
   float defaultJumpForce = 1000.f; // Since jumpForce is devided by the fade value, this stores the original one
   float jumpForce;
   float jumpForceFade = 1.1f; // how quickly jumpforce loses its value (jumpForce is devided by this value)
-  float jumpTime = 0.25f; // how long will jumpForce be applied
+  float jumpTime = 0.25f; // how long will jumpForce be applied in seconds
 
   sf::Vector2f velocity;
   sf::Vector2f inputVelocity; // Helps determine which movement key is pressed (basically a unit vector)

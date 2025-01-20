@@ -145,6 +145,7 @@
     <ClCompile Include="WorldGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AtlasTile.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileSelector.h" />
