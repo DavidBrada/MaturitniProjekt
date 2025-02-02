@@ -14,7 +14,7 @@ int main()
   // Mouse position relative to the screen; used for debugging
   sf::Vector2i mousePosScreen = sf::Mouse::getPosition();
 
-  sf::RenderWindow window(sf::VideoMode(1920, 1080), "TILEMAP", sf::Style::Fullscreen);
+  sf::RenderWindow window(sf::VideoMode(1920, 1080), "Bradarria", sf::Style::Default);
   window.setFramerateLimit(60);
   window.setKeyRepeatEnabled(false);
 
@@ -109,15 +109,11 @@ int main()
           tileSelector.selectedType = 2;
         }
         break;
-
-      case sf::Event::MouseButtonPressed:
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-        {
-          worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
-        }
       }
     }
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type)
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && 
+        tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type &&
+        tileSelector.canPlace)
     {
       worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
     }

@@ -86,7 +86,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
 
   if (jumping)
   {
-    if (jumpTimer.getElapsedTime().asSeconds() < 0.5f)
+    if (jumpTimer.getElapsedTime().asSeconds() < jumpTime)
     {
       jumpForce /= jumpForceFade;
       velocity.y -= jumpForce;
@@ -299,6 +299,7 @@ void Player::Draw(sf::RenderWindow& window, WorldGrid& worldGrid)
   */
   //window.draw(body);
   window.draw(sprite);
+  
   /*
   window.draw(groundCheckRectLeft);
   window.draw(groundCheckRectRight);

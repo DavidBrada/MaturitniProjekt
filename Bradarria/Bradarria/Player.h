@@ -11,16 +11,16 @@ public:
   sf::RectangleShape body; // Player object that is displayed
   sf::Sprite sprite;
   sf::Texture texture;
-  float gravity = 400.f;
+  float gravity = 300.f;
   bool colliding;
 
   // Jumping
   bool grounded;
   bool jumping;
-  float moveSpeed = 250.f;
+  float moveSpeed = 150.f;
   sf::Clock jumpCooldown;
   sf::Clock jumpTimer;
-  float defaultJumpForce = 1000.f; // Since jumpForce is devided by the fade value, this stores the original one
+  float defaultJumpForce = 900.f; // Since jumpForce is devided by the fade value, this stores the original one
   float jumpForce;
   float jumpForceFade = 1.1f; // how quickly jumpforce loses its value (jumpForce is devided by this value)
   float jumpTime = 0.25f; // how long will jumpForce be applied in seconds

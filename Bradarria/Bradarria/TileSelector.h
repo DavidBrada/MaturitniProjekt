@@ -9,6 +9,13 @@ struct TileSelector
 
   int selectedType = 0;
 
+  int xCanPlaceFrom;
+  int xCanPlaceTo;
+  int yCanPlaceFrom;
+  int yCanPlaceTo;
+
+  bool canPlace; // If a block can be placed at current cursor position
+
   void Initialize(WorldGrid& worldGrid);
   void Update(WorldGrid& worldGrid);
 };
