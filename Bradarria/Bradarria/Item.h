@@ -2,6 +2,7 @@
 class Item
 {
   float miningSpeed;
+  bool itemType;
 
   enum type
   {

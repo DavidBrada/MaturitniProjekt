@@ -7,16 +7,17 @@ void Player::Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid)
   body.setPosition(sf::Vector2f(xStartPos, yStartPos));
   body.setFillColor(sf::Color::Red);
 
-  collisionAreaVisual.setSize(sf::Vector2f(worldGrid.tileSize * 3, worldGrid.tileSize * 4));
-  collisionAreaVisual.setFillColor(sf::Color::Blue);
-
-  groundCheckRectLeft.setSize(sf::Vector2f(width / 8, width / 2));
+  groundCheckRectLeft.setSize(sf::Vector2f(width / 8, width / 4));
   groundCheckRectLeft.setFillColor(sf::Color::Blue);
 
-  groundCheckRectRight.setSize(sf::Vector2f(width / 8, width / 2));
+  groundCheckRectRight.setSize(sf::Vector2f(width / 8, width / 4));
   groundCheckRectRight.setFillColor(sf::Color::Blue);
 
+  groundCheckRectCenter.setSize(sf::Vector2f(width / 8, width / 4));
+  groundCheckRectCenter.setFillColor(sf::Color::Blue);
+
   jumpForce = defaultJumpForce;
+  viewMoveCenterOffset = 100.f;
 
   if (texture.loadFromFile("assets/textures/player.png"))
   {
@@ -38,8 +39,6 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
   sf::Vector2f rayOrigin = sf::Vector2f(body.getPosition().x + body.getSize().x / 2, body.getPosition().y + body.getSize().y / 2);
   sf::Vector2f rayDirection = velocity * 20.f;
 
-  collisionAreaVisual.setPosition(sf::Vector2f(body.getPosition().x - worldGrid.tileSize, body.getPosition().y - worldGrid.tileSize));
-
   sf::Vector2f contactPoint, contactNormal;
   float time;
 
@@ -50,6 +49,8 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
   {
     velocity.x = -moveSpeed;
     inputVelocity.x = -1;
+
+    // Rotate sprite left
     sprite.setOrigin(width, 0);
     sprite.setScale(-1.f, 1.f);
   }
@@ -57,6 +58,8 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
   {
     velocity.x = moveSpeed;
     inputVelocity.x = 1;
+
+    // Rotate sprite right
     sprite.setOrigin(0, 0);
     sprite.setScale(1.f, 1.f);
   }
@@ -66,6 +69,16 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
     inputVelocity.x = 0.f;
   }
 
+  if (body.getPosition().x > view.getCenter().x + viewMoveCenterOffset && inputVelocity.x > 0.f)
+  {
+    view.move(moveSpeed * deltaTime, 0.f);
+  }
+  else if (body.getPosition().x < view.getCenter().x - viewMoveCenterOffset && inputVelocity.x < 0.f)
+  {
+    view.move(-moveSpeed * deltaTime, 0.f);
+  }
+
+  // -------------------- ONLY FOR DEBUGGING DELETE LATER -----------------------
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
   {
     view.move(-moveSpeed * deltaTime, 0.f);
@@ -134,7 +147,8 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
       if (worldGrid.tileMap[x][y].hasCollision)
       {
         if (IsGrounded(groundCheckRectLeft, worldGrid.tileMap[x][y].shape, contactPoint, contactNormal, time, deltaTime) ||
-            IsGrounded(groundCheckRectRight, worldGrid.tileMap[x][y].shape, contactPoint, contactNormal, time, deltaTime))
+            IsGrounded(groundCheckRectRight, worldGrid.tileMap[x][y].shape, contactPoint, contactNormal, time, deltaTime) ||
+            IsGrounded(groundCheckRectCenter, worldGrid.tileMap[x][y].shape, contactPoint, contactNormal, time, deltaTime))
         {
           if (!grounded)
           {
@@ -154,9 +168,9 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
 
   // Sort the tiles in the vector by the calculated contact time (closest tiles to the player are first)
   std::sort(z.begin(), z.end(), [](const std::pair<sf::Vector2i, float>& a, const std::pair<sf::Vector2i, float>& b)
-            {
-              return a.second < b.second; 
-            });
+  {
+    return a.second < b.second;
+  });
 
   // Check for collisions in sorted order
   for (auto j : z)
@@ -179,6 +193,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
   sprite.setPosition(body.getPosition());
   groundCheckRectLeft.setPosition(sf::Vector2f(body.getPosition().x, body.getPosition().y + height));
   groundCheckRectRight.setPosition(sf::Vector2f(body.getPosition().x + body.getSize().x - groundCheckRectRight.getSize().x, body.getPosition().y + height));
+  groundCheckRectCenter.setPosition(sf::Vector2f(body.getPosition().x + body.getSize().x / 2 - groundCheckRectRight.getSize().x / 2, body.getPosition().y + height));
 }
 
 void Player::Jump()
@@ -192,10 +207,9 @@ void Player::Jump()
 
 bool Player::IsGrounded(const sf::RectangleShape& cBody, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& contactTime, float fElapsedTime)
 {
-
-  if (RayTest(sf::Vector2f(cBody.getPosition().x + cBody.getSize().x / 2, cBody.getPosition().y + cBody.getSize().y / 2), sf::Vector2f(0.f, moveSpeed) * fElapsedTime, target, contactPoint, contactNormal, contactTime))
+  if (RayTest(sf::Vector2f(cBody.getPosition().x + cBody.getSize().x / 2, cBody.getPosition().y + cBody.getSize().y / 2), sf::Vector2f(0.f, -1.f) * fElapsedTime, target, contactPoint, contactNormal, contactTime))
   {
-    if (contactTime < 1.0f) return true;
+    if (contactTime < 1.f) return true;
   }
   return false;
 }
@@ -216,7 +230,7 @@ bool Player::IsColliding(const sf::RectangleShape& cBody, const sf::RectangleSha
 
   if (RayTest(sf::Vector2f(cBody.getPosition().x + cBody.getSize().x / 2, cBody.getPosition().y + cBody.getSize().y / 2), velocity * deltaTime, expandedTarget, contactPoint, contactNormal, contactTime))
   {
-    if (contactTime < 1.0f && contactTime >= 0.0f) return true;
+    return (contactTime >= 0.0f && contactTime < 1.0f);
   }
 
   return false;
@@ -279,30 +293,13 @@ void Player::Draw(sf::RenderWindow& window, WorldGrid& worldGrid)
   cFromY = body.getPosition().y / worldGrid.tileSize - 2;
   cToY = body.getPosition().y / worldGrid.tileSize + 5;
   
-  /*
-  for (int x = cFromX; x < cToX; x++)
-  {
-    for (int y = cFromY; y < cToY; y++)
-    {
-      if (worldGrid.tileMap[x][y].shape.getGlobalBounds().intersects(collisionAreaVisual.getGlobalBounds()))
-      {
-        worldGrid.tileMap[x][y].shape.setOutlineColor(sf::Color::Magenta);
-        worldGrid.tileMap[x][y].shape.setOutlineThickness(3.f);
-      }
-      else
-      {
-        worldGrid.tileMap[x][y].shape.setOutlineColor(sf::Color(150, 150, 150));
-        worldGrid.tileMap[x][y].shape.setOutlineThickness(1.5f);
-      }
-    }
-  }
-  */
-  //window.draw(body);
+  window.draw(body);
   window.draw(sprite);
   
-  /*
+  
   window.draw(groundCheckRectLeft);
   window.draw(groundCheckRectRight);
+  window.draw(groundCheckRectCenter);
   window.draw(contactNormalLine, 2, sf::Lines);
-  */
+  
 }

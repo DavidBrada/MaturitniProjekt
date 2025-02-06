@@ -28,12 +28,13 @@ public:
   sf::Vector2f velocity;
   sf::Vector2f inputVelocity; // Helps determine which movement key is pressed (basically a unit vector)
 
+  int viewMoveCenterOffset; // What distance from the center of the view does the player need to be in order for the view to start moving
 
   sf::Vertex contactNormalLine[2]; // Draws the normal vector of a collision
-  sf::RectangleShape collisionAreaVisual; // Used to visualize what tiles are checked for collision with the player object
 
   sf::RectangleShape groundCheckRectLeft; // When this object collides with the ground, the player is considered grounded
   sf::RectangleShape groundCheckRectRight; // Or this one
+  sf::RectangleShape groundCheckRectCenter; // Or this one
 
   // Collision checking - only check tiles around the player
   int cFromX = 0;

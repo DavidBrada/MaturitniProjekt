@@ -6,6 +6,10 @@ struct TileSelector
 {
   sf::RectangleShape selectorBody;
   sf::Vector2f selectorPosition;
+  sf::Vector2f clickPosition;
+  sf::Clock mineClock;
+
+  bool mining;
 
   int selectedType = 0;
 
@@ -18,4 +22,5 @@ struct TileSelector
 
   void Initialize(WorldGrid& worldGrid);
   void Update(WorldGrid& worldGrid);
+  void GetClickPos(WorldGrid& worldGrid);
 };

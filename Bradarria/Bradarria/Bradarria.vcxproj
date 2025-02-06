@@ -140,6 +140,7 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileSelector.cpp" />
     <ClCompile Include="UI.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="AtlasTile.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileSelector.h" />
     <ClInclude Include="UI.h" />

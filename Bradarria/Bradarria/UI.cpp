@@ -22,7 +22,7 @@ void UI::Initialize()
   controlsText.setPosition(1500.f, 20.f);
   controlsText.setString(" NO TEXT ");
 
-  playerInfoText.setCharacterSize(36);
+  playerInfoText.setCharacterSize(30);
   playerInfoText.setFillColor(sf::Color::White);
   playerInfoText.setFont(font);
   playerInfoText.setPosition(1600.f, 600.f);
@@ -50,7 +50,7 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
   ss.str(std::string());
 
   // Controls
-  ss << "Move: W, S" << std::endl
+  ss << "Move: A, D" << std::endl
     << "Jump: SPACE" << std::endl
     << "Select blocks: 1, 2, 3" << std::endl
     << "Debug info: TAB" << std::endl
@@ -59,12 +59,16 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
   ss.str(std::string());
 
   ss << "Grounded: " << player.grounded << std::endl
+    << "Colliding: " << player.colliding << std::endl
     << "X: " << std::floor((player.body.getPosition().x + player.width) / worldGrid.tileSize) << std::endl
     << "Y " << std::floor((player.body.getPosition().y + player.height) / worldGrid.tileSize) << std::endl
     << "Velocity X: " << player.velocity.x << std::endl
     << "Velocity Y: " << player.velocity.y << std::endl
     << "Jumping: " << player.jumping << std::endl
-    << "Input vel X: " << player.inputVelocity.x;
+    << "Input vel X: " << player.inputVelocity.x << std::endl
+    << "Click Pos: " << tileSelector.clickPosition.x << ", " << tileSelector.clickPosition.y << std::endl
+    << "Mining: " << tileSelector.mining << std::endl;
+
   playerInfoText.setString(ss.str());
 }
 

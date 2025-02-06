@@ -15,7 +15,7 @@ void TileSelector::Update(WorldGrid& worldGrid)
   selectorBody.setPosition(selectorPosition);
 
   canPlace = false;
-  
+
   xCanPlaceFrom = worldGrid.mousePosGrid.x - 1;
   xCanPlaceTo = worldGrid.mousePosGrid.x + 2;
   yCanPlaceFrom = worldGrid.mousePosGrid.y - 1;
@@ -60,15 +60,28 @@ void TileSelector::Update(WorldGrid& worldGrid)
   }
 #pragma endregion
 
-
   for (int x = xCanPlaceFrom; x < xCanPlaceTo; x++)
   {
     for (int y = yCanPlaceFrom; y < yCanPlaceTo; y++)
     {
-      if (worldGrid.tileMap[x][y].hasCollision)
+      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision)
       {
         canPlace = true;
       }
     }
   }
+
+  if (!canPlace)
+  {
+    selectorBody.setOutlineColor(sf::Color::Red);
+  }
+  else
+  {
+    selectorBody.setOutlineColor(sf::Color::Yellow);
+  }
+}
+
+void TileSelector::GetClickPos(WorldGrid& worldGrid)
+{
+  clickPosition = sf::Vector2f(worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
 }
