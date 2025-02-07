@@ -144,6 +144,7 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileSelector.cpp" />
     <ClCompile Include="UI.cpp" />
+    <ClCompile Include="WorldGen.cpp" />
     <ClCompile Include="WorldGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +155,7 @@
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileSelector.h" />
     <ClInclude Include="UI.h" />
+    <ClInclude Include="WorldGen.h" />
     <ClInclude Include="WorldGrid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

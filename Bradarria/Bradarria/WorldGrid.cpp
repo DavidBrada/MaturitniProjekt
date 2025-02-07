@@ -35,44 +35,8 @@ void WorldGrid::Initialize()
 
 
   // World gen
-  for (int x = 0; x < mapWidth; x++)
-  {
-    tileMap[x].resize(mapWidth, Tile());
-    for (int y = 0; y < mapHeight; y++)
-    {
-      int i = x + y * mapWidth;
 
-
-      tileMap[x][y].shape.setSize(sf::Vector2f(tileSize, tileSize));
-      tileMap[x][y].shape.setPosition(x * tileSize, y * tileSize);
-      tileMap[x][y].position = sf::Vector2f(x * tileSize, y * tileSize);
-      
-      // Tile generation conditions
-      if (y < groundLevel)
-      {
-        PlaceTile(air, x, y);
-      }
-      //if the y values is within a specific range and the tile has air above it, grass is generated
-      else if (y >= groundLevel && tileMap[x][y - 1].type == 0)
-      {
-        PlaceTile(grass, x, y);
-      }
-      else
-      {
-        PlaceTile(dirt, x, y);
-      }
-
-      tileMap[x][y].sprite.setTexture(tileAtlasTexture);
-      tileMap[x][y].sprite.setTextureRect(sf::IntRect(
-        atlasTiles[tileMap[x][y].type].position.x,
-        atlasTiles[tileMap[x][y].type].position.y,
-        tileSize,
-        tileSize
-      ));
-
-      tileMap[x][y].sprite.setPosition(tileMap[x][y].position);
-    }
-  }
+  GenerateTerrain();
 }
 
 
@@ -128,6 +92,17 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos)
   case 2:
     tileMap[xPos][yPos].hasCollision = true;
     
+    tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+      atlasTiles[type].position.x,
+      atlasTiles[type].position.y,
+      tileSize,
+      tileSize
+    ));
+    break;
+
+  case 3:
+    tileMap[xPos][yPos].hasCollision = false;
+
     tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
@@ -192,6 +167,75 @@ void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
     for (int y = fromY; y < toY; y++)
     {
       window.draw(tileMap[x][y].sprite);
+    }
+  }
+}
+
+void WorldGrid::GenerateTerrain()
+{
+  FastNoiseLite terrainNoise;
+  FastNoiseLite caveNoise;
+
+  terrainNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+
+  caveNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+  caveNoise.SetFrequency(0.03f);
+
+  for (int x = 0; x < mapWidth; x++)
+  {
+    tileMap[x].resize(mapWidth, Tile());
+
+    float noiseValue = terrainNoise.GetNoise((float)x * 2.f, 0.0f); // Scale for smoothness
+    int heightOffset = (int)(noiseValue * 20.0f); // Adjust amplitude
+    terrainHeight = groundLevel + heightOffset; // Shift ground level
+
+    if (terrainHeight > groundLevel + 2.f)
+    {
+      terrainHeight = groundLevel + 2.f;
+    }
+
+    for (int y = 0; y < mapHeight; y++)
+    {
+      tileMap[x][y].shape.setSize(sf::Vector2f(tileSize, tileSize));
+      tileMap[x][y].shape.setPosition(x * tileSize, y * tileSize);
+      tileMap[x][y].position = sf::Vector2f(x * tileSize, y * tileSize);
+      
+      float noiseValue = caveNoise.GetNoise((float)x, (float)y);
+      if (fabs(noiseValue) < 0.1f)
+      {
+        if (y > terrainHeight + 5)
+        {
+          PlaceTile(dirtBackground, x, y);
+        }
+        else
+        {
+          PlaceTile(air, x, y);
+        }
+        
+      }
+      else if (y < terrainHeight)
+      {
+        PlaceTile(air, x, y);
+      }
+      //if the y values is within a specific range and the tile has air above it, grass is generated
+      else if (y >= terrainHeight && tileMap[x][y - 1].type == 0)
+      {
+        PlaceTile(grass, x, y);
+      }
+      else
+      {
+        PlaceTile(dirt, x, y);
+      }
+
+      tileMap[x][y].sprite.setTexture(tileAtlasTexture);
+      tileMap[x][y].sprite.setTextureRect(sf::IntRect(
+        atlasTiles[tileMap[x][y].type].position.x,
+        atlasTiles[tileMap[x][y].type].position.y,
+        tileSize,
+        tileSize
+      ));
+
+      tileMap[x][y].sprite.setPosition(tileMap[x][y].position);
     }
   }
 }

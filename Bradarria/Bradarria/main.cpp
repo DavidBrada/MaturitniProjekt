@@ -6,6 +6,8 @@
 #include "Player.h"
 #include "Item.h"
 #include "Settings.h"
+#include "WorldGen.h"
+#include "FastNoiseLite.h"
 
 int main()
 {
@@ -28,6 +30,7 @@ int main()
   sf::View view;
   Item item;
   Settings settings;
+  WorldGen worldGen;
 
 
   // Initialize game objects
@@ -39,6 +42,7 @@ int main()
   
   view.setSize(1920.f, 1080.f);
   view.setCenter(sf::Vector2f(player.body.getPosition().x + player.width / 2, player.body.getPosition().y + player.height / 2)); // Initializes player view in the middle of the whole tilemap
+
 
   while (window.isOpen())
   {
@@ -54,7 +58,7 @@ int main()
 
     //Update Game
     tileSelector.Update(worldGrid);
-    player.Update(dt, worldGrid, view);
+    player.Update(dt, worldGrid, view, tileSelector.selectorBody);
 
     // Update UI
     ui.Update(worldGrid, tileSelector, player);
@@ -124,14 +128,14 @@ int main()
         break;
 
       case sf::Event::MouseButtonReleased:
-        tileSelector.mining = false;
+        player.mining = false;
 
       }
     }
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
       if (tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type &&
-          tileSelector.canPlace && tileSelector.selectedType != 0)
+          player.canPlace && tileSelector.selectedType != 0)
       {
         worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
       }
@@ -145,7 +149,7 @@ int main()
                  tileSelector.clickPosition.y == worldGrid.mousePosGrid.y &&
                  worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].hasCollision)
         {
-          tileSelector.mining = true;
+          player.mining = true;
 
           if (tileSelector.mineClock.getElapsedTime().asSeconds() >= 1.f)
           {
@@ -157,7 +161,7 @@ int main()
           tileSelector.mineClock.restart();
           tileSelector.clickPosition.x = worldGrid.mousePosGrid.x;
           tileSelector.clickPosition.y = worldGrid.mousePosGrid.y;
-          tileSelector.mining = false;
+          player.mining = false;
         }
       }
 

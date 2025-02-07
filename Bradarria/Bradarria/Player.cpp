@@ -17,7 +17,8 @@ void Player::Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid)
   groundCheckRectCenter.setFillColor(sf::Color::Blue);
 
   jumpForce = defaultJumpForce;
-  viewMoveCenterOffset = 100.f;
+  xViewMoveCenterOffset = 100.f;
+  yViewMoveCenterOffset = 50.f;
 
   if (texture.loadFromFile("assets/textures/player.png"))
   {
@@ -34,7 +35,7 @@ void Player::Load()
 {
 }
 
-void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
+void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody)
 {
   sf::Vector2f rayOrigin = sf::Vector2f(body.getPosition().x + body.getSize().x / 2, body.getPosition().y + body.getSize().y / 2);
   sf::Vector2f rayDirection = velocity * 20.f;
@@ -69,31 +70,42 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
     inputVelocity.x = 0.f;
   }
 
-  if (body.getPosition().x > view.getCenter().x + viewMoveCenterOffset && inputVelocity.x > 0.f)
+  // Move camera with player on x
+  if (body.getPosition().x > view.getCenter().x + xViewMoveCenterOffset && inputVelocity.x > 0.f)
   {
     view.move(moveSpeed * deltaTime, 0.f);
   }
-  else if (body.getPosition().x < view.getCenter().x - viewMoveCenterOffset && inputVelocity.x < 0.f)
+  else if (body.getPosition().x < view.getCenter().x - xViewMoveCenterOffset && inputVelocity.x < 0.f)
   {
     view.move(-moveSpeed * deltaTime, 0.f);
+  }
+
+  // Move camera with player on y
+  if (body.getPosition().y > view.getCenter().y + yViewMoveCenterOffset)
+  {
+    view.move(0.f, moveSpeed * deltaTime);
+  }
+  else if (body.getPosition().y < view.getCenter().y - yViewMoveCenterOffset)
+  {
+    view.move(0.f, -moveSpeed * deltaTime);
   }
 
   // -------------------- ONLY FOR DEBUGGING DELETE LATER -----------------------
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
   {
-    view.move(-moveSpeed * deltaTime, 0.f);
+    view.move(-moveSpeed * deltaTime * 2, 0.f);
   }
   else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
   {
-    view.move(moveSpeed * deltaTime, 0.f);
+    view.move(moveSpeed * deltaTime * 2, 0.f);
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
   {
-    view.move(0.f, -moveSpeed * deltaTime);
+    view.move(0.f, -moveSpeed * deltaTime * 2);
   }
   else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
   {
-    view.move(0.f, moveSpeed * deltaTime);
+    view.move(0.f, moveSpeed * deltaTime * 2);
   }
 #pragma endregion
 
@@ -108,6 +120,63 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view)
     {
       jumping = false;
       jumpForce = defaultJumpForce;
+    }
+  }
+
+  canPlace = false;
+
+  xCanPlaceFrom = worldGrid.mousePosGrid.x - 1;
+  xCanPlaceTo = worldGrid.mousePosGrid.x + 2;
+  yCanPlaceFrom = worldGrid.mousePosGrid.y - 1;
+  yCanPlaceTo = worldGrid.mousePosGrid.y + 2;
+
+#pragma region mapEdgeConditions
+
+  if (xCanPlaceFrom < 0)
+  {
+    xCanPlaceFrom = 0;
+  }
+  else if (xCanPlaceFrom >= worldGrid.mapWidth)
+  {
+    xCanPlaceFrom = worldGrid.mapWidth - 1;
+  }
+
+  if (xCanPlaceTo < 0)
+  {
+    xCanPlaceTo = 0;
+  }
+  else if (xCanPlaceTo >= worldGrid.mapWidth)
+  {
+    xCanPlaceTo = worldGrid.mapWidth;
+  }
+
+  if (yCanPlaceFrom < 0)
+  {
+    yCanPlaceFrom = 0;
+  }
+  else if (yCanPlaceFrom >= worldGrid.mapHeight)
+  {
+    yCanPlaceFrom = worldGrid.mapHeight - 1;
+  }
+
+  if (yCanPlaceTo < 0)
+  {
+    yCanPlaceTo = 0;
+  }
+  else if (yCanPlaceTo >= worldGrid.mapHeight)
+  {
+    yCanPlaceTo = worldGrid.mapHeight;
+  }
+#pragma endregion
+
+  for (int x = xCanPlaceFrom; x < xCanPlaceTo; x++)
+  {
+    for (int y = yCanPlaceFrom; y < yCanPlaceTo; y++)
+    {
+      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision)
+      {
+        canPlace = true;
+      }
     }
   }
 
@@ -293,13 +362,13 @@ void Player::Draw(sf::RenderWindow& window, WorldGrid& worldGrid)
   cFromY = body.getPosition().y / worldGrid.tileSize - 2;
   cToY = body.getPosition().y / worldGrid.tileSize + 5;
   
-  window.draw(body);
+  //window.draw(body);
   window.draw(sprite);
   
-  
+  /*
   window.draw(groundCheckRectLeft);
   window.draw(groundCheckRectRight);
   window.draw(groundCheckRectCenter);
   window.draw(contactNormalLine, 2, sf::Lines);
-  
+  */
 }

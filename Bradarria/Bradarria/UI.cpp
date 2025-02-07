@@ -67,7 +67,7 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
     << "Jumping: " << player.jumping << std::endl
     << "Input vel X: " << player.inputVelocity.x << std::endl
     << "Click Pos: " << tileSelector.clickPosition.x << ", " << tileSelector.clickPosition.y << std::endl
-    << "Mining: " << tileSelector.mining << std::endl;
+    << "Mining: " << player.mining << std::endl;
 
   playerInfoText.setString(ss.str());
 }

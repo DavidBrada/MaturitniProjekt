@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "Tile.h"
 #include "AtlasTile.h"
+#include "FastNoiseLite.h"
 
 struct WorldGrid
 {
@@ -16,7 +17,7 @@ struct WorldGrid
   float tileSize = 16.f;
   unsigned tileSizeU = static_cast<unsigned>(tileSize);
 
-  const int mapWidth = 200;
+  const int mapWidth = 500;
   const int mapHeight = 100;
 
   sf::Texture tileAtlasTexture;
@@ -25,6 +26,7 @@ struct WorldGrid
   int tileCount;
 
   int groundLevel = 40;
+  int terrainHeight;
 
   // Used for culling (rendering optimalization)
   int fromX = 0;
@@ -37,14 +39,16 @@ struct WorldGrid
   void Initialize();
   void Update(sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, sf::View& view);
+  void GenerateTerrain();
 
-  std::string blocks[3] = {"air", "dirt", "grass"}; // Hardcoded block count, change later
+  std::string blocks[4] = {"air", "dirt", "grass", "dirt background"}; // Hardcoded block count, change later
 
   enum blockTypes
   {
     air,
     dirt,
-    grass
+    grass,
+    dirtBackground
   };
 };
 

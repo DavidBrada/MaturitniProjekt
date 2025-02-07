@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "Tile.h"
 #include "WorldGrid.h"
+#include "TileSelector.h"
 
 class Player
 {
@@ -25,10 +26,18 @@ public:
   float jumpForceFade = 1.1f; // how quickly jumpforce loses its value (jumpForce is devided by this value)
   float jumpTime = 0.25f; // how long will jumpForce be applied in seconds
 
+  bool canPlace; // If a block can be placed at current cursor position
+  bool mining;
+  int xCanPlaceFrom;
+  int xCanPlaceTo;
+  int yCanPlaceFrom;
+  int yCanPlaceTo;
+
   sf::Vector2f velocity;
   sf::Vector2f inputVelocity; // Helps determine which movement key is pressed (basically a unit vector)
 
-  int viewMoveCenterOffset; // What distance from the center of the view does the player need to be in order for the view to start moving
+  int xViewMoveCenterOffset; // What distance from the center of the view does the player need to be in order for the view to start moving
+  int yViewMoveCenterOffset;
 
   sf::Vertex contactNormalLine[2]; // Draws the normal vector of a collision
 
@@ -44,7 +53,7 @@ public:
 
   void Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid);
   void Load();
-  void Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view);
+  void Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody);
   void Jump();
   bool RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& t_hit_near);
   bool IsColliding(const sf::RectangleShape& in, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& contactTime, float fElapsedTime);
