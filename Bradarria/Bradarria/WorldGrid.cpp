@@ -1,8 +1,8 @@
 ﻿#include "WorldGrid.h"
 
-
 void WorldGrid::Initialize()
 {
+  
   tileMap.resize(mapWidth, std::vector<Tile>());
 
   if (tileAtlasTexture.loadFromFile("assets/textures/texture_test.png"))
@@ -37,6 +37,15 @@ void WorldGrid::Initialize()
   // World gen
 
   GenerateTerrain();
+  InitializeCave();
+
+  for (int i = 0; i < 5; i++)
+  { // Run smoothing multiple times
+    SmoothCave(tileMap);
+  }
+
+  GenerateTunnels();
+  FillTiles();
 }
 
 
@@ -64,13 +73,13 @@ void WorldGrid::Update(sf::RenderWindow& window)
   }
 }
 
-void WorldGrid::PlaceTile(int type, int xPos, int yPos)
+void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<Tile>>& worldMap)
 {
   switch (type)
   {
   case 0:
-    tileMap[xPos][yPos].hasCollision = false;
-    tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+    worldMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
       tileSize,
@@ -79,9 +88,9 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos)
     break;
 
   case 1:
-    tileMap[xPos][yPos].hasCollision = true;
+    worldMap[xPos][yPos].hasCollision = true;
 
-    tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
       tileSize,
@@ -90,9 +99,9 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos)
     break;
     
   case 2:
-    tileMap[xPos][yPos].hasCollision = true;
+    worldMap[xPos][yPos].hasCollision = true;
     
-    tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
       tileSize,
@@ -101,9 +110,9 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos)
     break;
 
   case 3:
-    tileMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].hasCollision = false;
 
-    tileMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
       tileSize,
@@ -111,7 +120,7 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos)
     ));
     break;
   }
-  tileMap[xPos][yPos].type = type;
+  worldMap[xPos][yPos].type = type;
 }
 
 void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
@@ -174,24 +183,25 @@ void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
 void WorldGrid::GenerateTerrain()
 {
   FastNoiseLite terrainNoise;
-  FastNoiseLite caveNoise;
 
   terrainNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-
-  caveNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-  caveNoise.SetFrequency(0.03f);
 
   for (int x = 0; x < mapWidth; x++)
   {
     tileMap[x].resize(mapWidth, Tile());
 
-    float noiseValue = terrainNoise.GetNoise((float)x * 2.f, 0.0f); // Scale for smoothness
-    int heightOffset = (int)(noiseValue * 20.0f); // Adjust amplitude
+    float noiseValue = terrainNoise.GetNoise((float)x, 0.0f); // Scale for smoothness
+    int heightOffset = (int)(noiseValue * 30.0f); // Adjust amplitude
     terrainHeight = groundLevel + heightOffset; // Shift ground level
-
+    
     if (terrainHeight > groundLevel + 2.f)
     {
       terrainHeight = groundLevel + 2.f;
+    }
+
+    if (x == mapWidth / 2)
+    {
+      playerSpawnPos.x = x * tileSize;
     }
 
     for (int y = 0; y < mapHeight; y++)
@@ -199,32 +209,24 @@ void WorldGrid::GenerateTerrain()
       tileMap[x][y].shape.setSize(sf::Vector2f(tileSize, tileSize));
       tileMap[x][y].shape.setPosition(x * tileSize, y * tileSize);
       tileMap[x][y].position = sf::Vector2f(x * tileSize, y * tileSize);
-      
-      float noiseValue = caveNoise.GetNoise((float)x, (float)y);
-      if (fabs(noiseValue) < 0.1f)
+
+      if (y == terrainHeight && x == mapWidth / 2)
       {
-        if (y > terrainHeight + 5)
-        {
-          PlaceTile(dirtBackground, x, y);
-        }
-        else
-        {
-          PlaceTile(air, x, y);
-        }
-        
+        playerSpawnPos.y = (y - 5) * tileSize;
       }
-      else if (y < terrainHeight)
+      
+      if (y < terrainHeight)
       {
-        PlaceTile(air, x, y);
+        PlaceTile(air, x, y, tileMap);
       }
       //if the y values is within a specific range and the tile has air above it, grass is generated
       else if (y >= terrainHeight && tileMap[x][y - 1].type == 0)
       {
-        PlaceTile(grass, x, y);
+        PlaceTile(grass, x, y, tileMap);
       }
       else
       {
-        PlaceTile(dirt, x, y);
+        PlaceTile(dirt, x, y, tileMap);
       }
 
       tileMap[x][y].sprite.setTexture(tileAtlasTexture);
@@ -236,6 +238,79 @@ void WorldGrid::GenerateTerrain()
       ));
 
       tileMap[x][y].sprite.setPosition(tileMap[x][y].position);
+    }
+  }
+}
+
+void WorldGrid::InitializeCave()
+{
+  for (int x = 0; x < mapWidth; x++)
+  {
+    for (int y = terrainHeight + 10; y < mapHeight - 10; y++)
+    {
+      (rand() % 100 < 45) ? PlaceTile(1, x, y, tileMap) : PlaceTile(0, x, y, tileMap); // 45% solid, 55% air
+    }
+  }
+}
+
+void WorldGrid::GenerateTunnels()
+{
+  FastNoiseLite caveNoise;
+
+  caveNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+  caveNoise.SetFrequency(0.03f);
+
+  for (int x = 0; x < mapWidth; x++)
+  {
+    for (int y = 0; y < mapHeight - 10; y++)
+    {
+      float noiseValue = caveNoise.GetNoise((float)x, (float)y);
+      if (fabs(noiseValue) < 0.1f)
+      {
+        PlaceTile(air, x, y, tileMap);
+      }
+    }
+  }
+}
+
+void WorldGrid::SmoothCave(std::vector<std::vector<Tile>>& worldMap)
+{
+  std::vector<std::vector<Tile>> newMap = worldMap;
+
+  for (int x = 1; x < mapWidth - 1; x++)
+  {
+    for (int y = terrainHeight + 10; y < mapHeight - 11; y++)
+    {
+      int neighborCount = 0;
+      for (int dx = -1; dx <= 1; dx++)
+      {
+        for (int dy = -1; dy <= 1; dy++)
+        {
+          if (tileMap[x + dx][y + dy].type == 1)
+          {
+            neighborCount++;
+          }
+        }
+      }
+
+      // Rule: If more than 4 neighbors are solid, keep it solid.
+      if (neighborCount > 4) PlaceTile(0, x, y, newMap);
+      else PlaceTile(1, x, y, newMap);
+    }
+  }
+  tileMap = newMap; // Replace old map with smoothed version
+}
+
+void WorldGrid::FillTiles()
+{
+  for (int x = 1; x < mapWidth - 1; x++)
+  {
+    for (int y = terrainHeight + 5; y < mapHeight; y++)
+    {
+      if (y > terrainHeight + 5 && tileMap[x][y].type == 0)
+      {
+        PlaceTile(dirtBackground, x, y, tileMap);
+      }
     }
   }
 }

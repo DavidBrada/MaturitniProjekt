@@ -13,12 +13,13 @@ struct WorldGrid
 
   std::vector<std::vector<Tile>> tileMap;
   AtlasTile* atlasTiles;
+  sf::Vector2i playerSpawnPos;
 
   float tileSize = 16.f;
   unsigned tileSizeU = static_cast<unsigned>(tileSize);
 
   const int mapWidth = 500;
-  const int mapHeight = 100;
+  const int mapHeight = 300;
 
   sf::Texture tileAtlasTexture;
   int xTileCount;
@@ -34,12 +35,16 @@ struct WorldGrid
   int fromY = 0;
   int toY = 0;
 
-  void PlaceTile(int type, int xPos, int yPos);
+  void PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<Tile>>& worldMap);
 
   void Initialize();
   void Update(sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, sf::View& view);
   void GenerateTerrain();
+  void InitializeCave();
+  void GenerateTunnels();
+  void SmoothCave(std::vector<std::vector<Tile>>& worldMap);
+  void FillTiles();
 
   std::string blocks[4] = {"air", "dirt", "grass", "dirt background"}; // Hardcoded block count, change later
 

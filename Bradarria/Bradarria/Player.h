@@ -12,7 +12,8 @@ public:
   sf::RectangleShape body; // Player object that is displayed
   sf::Sprite sprite;
   sf::Texture texture;
-  float gravity = 300.f;
+  float gravity = 0.f;
+  bool gravityEnabled;
   bool colliding;
 
   // Jumping

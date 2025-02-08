@@ -36,13 +36,13 @@ int main()
   // Initialize game objects
   worldGrid.Initialize();
   tileSelector.Initialize(worldGrid);
-  player.Initialize((worldGrid.mapWidth / 2) * worldGrid.tileSize, worldGrid.groundLevel * worldGrid.tileSize - 4 * worldGrid.tileSize, worldGrid);
   ui.Initialize();
   settings.Load();
   
+  player.Initialize(worldGrid.playerSpawnPos.x, worldGrid.playerSpawnPos.y, worldGrid);
+  
   view.setSize(1920.f, 1080.f);
   view.setCenter(sf::Vector2f(player.body.getPosition().x + player.width / 2, player.body.getPosition().y + player.height / 2)); // Initializes player view in the middle of the whole tilemap
-
 
   while (window.isOpen())
   {
@@ -137,36 +137,39 @@ int main()
       if (tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type &&
           player.canPlace && tileSelector.selectedType != 0)
       {
-        worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
+        worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
       }
-      if (tileSelector.selectedType == 0)
+      if (worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].hasCollision)
       {
-        if (settings.instaBreak)
+        if (tileSelector.selectedType == 0)
         {
-          worldGrid.PlaceTile(0, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
-        }
-        else if (tileSelector.clickPosition.x == worldGrid.mousePosGrid.x &&
-                 tileSelector.clickPosition.y == worldGrid.mousePosGrid.y &&
-                 worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].hasCollision)
-        {
-          player.mining = true;
-
-          if (tileSelector.mineClock.getElapsedTime().asSeconds() >= 1.f)
+          if (settings.instaBreak)
           {
-            worldGrid.PlaceTile(0, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
+            worldGrid.PlaceTile(0, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+          }
+          else if (tileSelector.clickPosition.x == worldGrid.mousePosGrid.x &&
+                   tileSelector.clickPosition.y == worldGrid.mousePosGrid.y &&
+                   worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].hasCollision)
+          {
+            player.mining = true;
+
+            if (tileSelector.mineClock.getElapsedTime().asSeconds() >= 1.f)
+            {
+              worldGrid.PlaceTile(0, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+            }
+          }
+          else
+          {
+            tileSelector.mineClock.restart();
+            tileSelector.clickPosition.x = worldGrid.mousePosGrid.x;
+            tileSelector.clickPosition.y = worldGrid.mousePosGrid.y;
+            player.mining = false;
           }
         }
-        else
-        {
-          tileSelector.mineClock.restart();
-          tileSelector.clickPosition.x = worldGrid.mousePosGrid.x;
-          tileSelector.clickPosition.y = worldGrid.mousePosGrid.y;
-          player.mining = false;
-        }
       }
-
-      
     }
+
+    player.gravityEnabled = true;
 
 #pragma region Rendering
 

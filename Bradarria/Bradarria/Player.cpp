@@ -2,6 +2,8 @@
 
 void Player::Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid)
 {
+  gravity = 300.f;
+  gravityEnabled = false;
   velocity = sf::Vector2f(0.f, 0.f);
   body.setSize(sf::Vector2f(width, height));
   body.setPosition(sf::Vector2f(xStartPos, yStartPos));
@@ -85,7 +87,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   {
     view.move(0.f, moveSpeed * deltaTime);
   }
-  else if (body.getPosition().y < view.getCenter().y - yViewMoveCenterOffset)
+  else if (body.getPosition().y < view.getCenter().y - (yViewMoveCenterOffset + 20.f))
   {
     view.move(0.f, -moveSpeed * deltaTime);
   }
@@ -184,7 +186,10 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
 
   // Gravity
   grounded = false;
-  velocity.y += gravity;
+  if (gravityEnabled)
+  {
+    velocity.y += gravity;
+  }
 
 #pragma region collisionHandling
   cFromX = body.getPosition().x / worldGrid.tileSize - 3;
