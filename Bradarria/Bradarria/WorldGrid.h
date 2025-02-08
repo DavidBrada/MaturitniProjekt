@@ -40,20 +40,22 @@ struct WorldGrid
   void Initialize();
   void Update(sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, sf::View& view);
-  void GenerateTerrain();
   void InitializeCave();
+  void GenerateTerrain();
   void GenerateTunnels();
   void SmoothCave(std::vector<std::vector<Tile>>& worldMap);
   void FillTiles();
 
-  std::string blocks[4] = {"air", "dirt", "grass", "dirt background"}; // Hardcoded block count, change later
+  void GenerateStone();
+
+  std::string blocks[5] = {"air", "dirt", "grass", "dirt background", "stone"}; // Hardcoded block count, change later
 
   enum blockTypes
   {
     air,
     dirt,
     grass,
-    dirtBackground
+    dirtBackground,
+    stone
   };
 };
-

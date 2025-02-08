@@ -35,17 +35,17 @@ void WorldGrid::Initialize()
 
 
   // World gen
-
   GenerateTerrain();
   InitializeCave();
 
   for (int i = 0; i < 5; i++)
-  { // Run smoothing multiple times
+  {
     SmoothCave(tileMap);
   }
 
   GenerateTunnels();
-  FillTiles();
+  FillTiles(); // Replaces air tiles with background blocks in caves
+  GenerateStone();
 }
 
 
@@ -111,6 +111,17 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
 
   case 3:
     worldMap[xPos][yPos].hasCollision = false;
+
+    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+      atlasTiles[type].position.x,
+      atlasTiles[type].position.y,
+      tileSize,
+      tileSize
+    ));
+    break;
+
+  case 4:
+    worldMap[xPos][yPos].hasCollision = true;
 
     worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
@@ -191,17 +202,12 @@ void WorldGrid::GenerateTerrain()
     tileMap[x].resize(mapWidth, Tile());
 
     float noiseValue = terrainNoise.GetNoise((float)x, 0.0f); // Scale for smoothness
-    int heightOffset = (int)(noiseValue * 30.0f); // Adjust amplitude
+    int heightOffset = (int)(noiseValue * 70.0f); // Adjust amplitude
     terrainHeight = groundLevel + heightOffset; // Shift ground level
     
     if (terrainHeight > groundLevel + 2.f)
     {
       terrainHeight = groundLevel + 2.f;
-    }
-
-    if (x == mapWidth / 2)
-    {
-      playerSpawnPos.x = x * tileSize;
     }
 
     for (int y = 0; y < mapHeight; y++)
@@ -212,7 +218,7 @@ void WorldGrid::GenerateTerrain()
 
       if (y == terrainHeight && x == mapWidth / 2)
       {
-        playerSpawnPos.y = (y - 5) * tileSize;
+        playerSpawnPos = sf::Vector2i(x * tileSize, (y - 5) * tileSize);
       }
       
       if (y < terrainHeight)
@@ -262,7 +268,7 @@ void WorldGrid::GenerateTunnels()
 
   for (int x = 0; x < mapWidth; x++)
   {
-    for (int y = 0; y < mapHeight - 10; y++)
+    for (int y = 30; y < mapHeight - 10; y++)
     {
       float noiseValue = caveNoise.GetNoise((float)x, (float)y);
       if (fabs(noiseValue) < 0.1f)
@@ -282,6 +288,8 @@ void WorldGrid::SmoothCave(std::vector<std::vector<Tile>>& worldMap)
     for (int y = terrainHeight + 10; y < mapHeight - 11; y++)
     {
       int neighborCount = 0;
+
+      //This checks for surrounding tiles of every tile
       for (int dx = -1; dx <= 1; dx++)
       {
         for (int dy = -1; dy <= 1; dy++)
@@ -293,12 +301,33 @@ void WorldGrid::SmoothCave(std::vector<std::vector<Tile>>& worldMap)
         }
       }
 
-      // Rule: If more than 4 neighbors are solid, keep it solid.
+      // if a tile is touching more than 4 tiles, it gets replaced with air
       if (neighborCount > 4) PlaceTile(0, x, y, newMap);
       else PlaceTile(1, x, y, newMap);
     }
   }
-  tileMap = newMap; // Replace old map with smoothed version
+  tileMap = newMap;
+}
+
+void WorldGrid::GenerateStone()
+{
+  FastNoiseLite stoneNoise;
+
+  stoneNoise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+  stoneNoise.SetFrequency(0.08f); // Controls stone patch size
+
+  for (int x = 0; x < mapWidth; x++)
+  {
+    for (int y = groundLevel + 10; y < mapHeight; y++)
+    { // Only underground
+      float noiseValue = stoneNoise.GetNoise((float)x, (float)y);
+
+      if (tileMap[x][y].type == 1 && noiseValue > 0.6f)
+      { // Higher threshold = more stone
+        PlaceTile(stone, x, y, tileMap);
+      }
+    }
+  }
 }
 
 void WorldGrid::FillTiles()

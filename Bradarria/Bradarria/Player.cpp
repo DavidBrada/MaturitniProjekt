@@ -73,11 +73,11 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   }
 
   // Move camera with player on x
-  if (body.getPosition().x > view.getCenter().x + xViewMoveCenterOffset && inputVelocity.x > 0.f)
+  if (inputVelocity.x > 0.f)
   {
     view.move(moveSpeed * deltaTime, 0.f);
   }
-  else if (body.getPosition().x < view.getCenter().x - xViewMoveCenterOffset && inputVelocity.x < 0.f)
+  else if (inputVelocity.x < 0.f)
   {
     view.move(-moveSpeed * deltaTime, 0.f);
   }
