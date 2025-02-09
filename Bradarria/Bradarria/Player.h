@@ -15,6 +15,7 @@ public:
   float gravity = 0.f;
   bool gravityEnabled;
   bool colliding;
+  bool bodyOutOfCamBounds; // set to true when the player goes a certain distance from the view center
 
   // Jumping
   bool grounded;

@@ -72,26 +72,6 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
     inputVelocity.x = 0.f;
   }
 
-  // Move camera with player on x
-  if (inputVelocity.x > 0.f)
-  {
-    view.move(moveSpeed * deltaTime, 0.f);
-  }
-  else if (inputVelocity.x < 0.f)
-  {
-    view.move(-moveSpeed * deltaTime, 0.f);
-  }
-
-  // Move camera with player on y
-  if (body.getPosition().y > view.getCenter().y + yViewMoveCenterOffset)
-  {
-    view.move(0.f, moveSpeed * deltaTime);
-  }
-  else if (body.getPosition().y < view.getCenter().y - (yViewMoveCenterOffset + 20.f))
-  {
-    view.move(0.f, -moveSpeed * deltaTime);
-  }
-
   // -------------------- ONLY FOR DEBUGGING DELETE LATER -----------------------
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
   {
@@ -261,6 +241,26 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   }
 
 #pragma endregion
+
+    // Move camera with player on x
+  if (velocity.x > 0.f)
+  {
+    view.move(moveSpeed * deltaTime, 0.f);
+  }
+  else if (velocity.x < 0.f)
+  {
+    view.move(-moveSpeed * deltaTime, 0.f);
+  }
+
+  // Move camera with player on y
+  if (body.getPosition().y > view.getCenter().y + yViewMoveCenterOffset)
+  {
+    view.move(0.f, moveSpeed * deltaTime);
+  }
+  else if (body.getPosition().y < view.getCenter().y - (yViewMoveCenterOffset + 20.f))
+  {
+    view.move(0.f, -moveSpeed * deltaTime);
+  }
 
   velocity *= deltaTime;
   body.move(velocity);

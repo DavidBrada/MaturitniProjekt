@@ -18,15 +18,18 @@ struct WorldGrid
   float tileSize = 16.f;
   unsigned tileSizeU = static_cast<unsigned>(tileSize);
 
-  const int mapWidth = 500;
-  const int mapHeight = 300;
+  static const int mapWidth = 500;
+  const int mapHeight = 400;
+
+  int terrainHeightValues[mapWidth];
+
 
   sf::Texture tileAtlasTexture;
   int xTileCount;
   int yTileCount;
   int tileCount;
 
-  int groundLevel = 40;
+  int groundLevel = 200;
   int terrainHeight;
 
   // Used for culling (rendering optimalization)
@@ -47,8 +50,9 @@ struct WorldGrid
   void FillTiles();
 
   void GenerateStone();
+  void GenerateIron();
 
-  std::string blocks[5] = {"air", "dirt", "grass", "dirt background", "stone"}; // Hardcoded block count, change later
+  std::string blocks[6] = {"air", "dirt", "grass", "dirt background", "stone", "iron"}; // Hardcoded block count, change later
 
   enum blockTypes
   {
@@ -56,6 +60,7 @@ struct WorldGrid
     dirt,
     grass,
     dirtBackground,
-    stone
+    stone,
+    iron
   };
 };
