@@ -158,6 +158,9 @@
     <ClInclude Include="WorldGen.h" />
     <ClInclude Include="WorldGrid.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Data.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -33,6 +33,8 @@ void WorldGrid::Initialize()
     std::cout << "Failed to load tilesheet." << std::endl;
   }
 
+  worldSeed = 12345;
+
 
   // World gen
   GenerateTerrain();
@@ -48,6 +50,8 @@ void WorldGrid::Initialize()
 
   GenerateStone();
   GenerateIron();
+  PlaceGrass();
+  GenerateTrees();
 }
 
 
@@ -81,6 +85,7 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
   {
   case air:
     worldMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].mineable = false;
     worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
@@ -91,7 +96,7 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
 
   case dirt:
     worldMap[xPos][yPos].hasCollision = true;
-
+    worldMap[xPos][yPos].mineable = true;
     worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
@@ -102,7 +107,7 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
     
   case grass:
     worldMap[xPos][yPos].hasCollision = true;
-    
+    worldMap[xPos][yPos].mineable = true;
     worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
@@ -113,7 +118,7 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
 
   case dirtBackground:
     worldMap[xPos][yPos].hasCollision = false;
-
+    worldMap[xPos][yPos].mineable = false;
     worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
@@ -124,7 +129,7 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
 
   case stone:
     worldMap[xPos][yPos].hasCollision = true;
-
+    worldMap[xPos][yPos].mineable = true;
     worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
@@ -135,7 +140,7 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
 
   case iron:
     worldMap[xPos][yPos].hasCollision = true;
-
+    worldMap[xPos][yPos].mineable = true;
     worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
       atlasTiles[type].position.x,
       atlasTiles[type].position.y,
@@ -144,7 +149,26 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
     ));
     break;
 
-
+  case treeTrunk:
+    worldMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+      atlasTiles[type].position.x,
+      atlasTiles[type].position.y,
+      tileSize,
+      tileSize
+    ));
+    break;
+  case leaves:
+    worldMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+      atlasTiles[type].position.x,
+      atlasTiles[type].position.y,
+      tileSize,
+      tileSize
+    ));
+    break;
   }
   worldMap[xPos][yPos].type = type;
 }
@@ -209,7 +233,7 @@ void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
 void WorldGrid::GenerateTerrain()
 {
   FastNoiseLite terrainNoise;
-
+  terrainNoise.SetSeed(worldSeed);
   terrainNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 
   for (int x = 0; x < mapWidth; x++)
@@ -233,20 +257,16 @@ void WorldGrid::GenerateTerrain()
       tileMap[x][y].shape.setPosition(x * tileSize, y * tileSize);
       tileMap[x][y].position = sf::Vector2f(x * tileSize, y * tileSize);
 
-      if (y == terrainHeight && x == mapWidth / 2)
+      if (y == terrainHeightValues[x] && x == mapWidth / 2)
       {
         playerSpawnPos = sf::Vector2i(x * tileSize, (y - 5) * tileSize);
       }
       
-      if (y < terrainHeight)
+      if (y < terrainHeightValues[x])
       {
         PlaceTile(air, x, y, tileMap);
       }
       //if the y values is within a specific range and the tile has air above it, grass is generated
-      else if (y >= terrainHeight && tileMap[x][y - 1].type == 0)
-      {
-        PlaceTile(grass, x, y, tileMap);
-      }
       else
       {
         PlaceTile(dirt, x, y, tileMap);
@@ -282,6 +302,9 @@ void WorldGrid::GenerateTunnels()
 {
   FastNoiseLite caveNoise;
 
+  seedOffset = 956275;
+
+  caveNoise.SetSeed(worldSeed + seedOffset);
   caveNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
   caveNoise.SetFrequency(0.03f);
 
@@ -332,6 +355,8 @@ void WorldGrid::GenerateStone()
 {
   FastNoiseLite stoneNoise;
 
+  seedOffset = 68365;
+  stoneNoise.SetSeed(worldSeed + seedOffset);
   stoneNoise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
   stoneNoise.SetFrequency(0.08f); // Controls patch size
 
@@ -353,6 +378,8 @@ void WorldGrid::GenerateIron()
 {
   FastNoiseLite ironNoise;
 
+  seedOffset = 26631;
+  ironNoise.SetSeed(worldSeed + seedOffset);
   ironNoise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
   ironNoise.SetFrequency(0.04f);
 
@@ -365,6 +392,59 @@ void WorldGrid::GenerateIron()
       if (tileMap[x][y].type == stone && noiseValue > 0.8f)
       {
         PlaceTile(iron, x, y, tileMap);
+      }
+    }
+  }
+}
+
+void WorldGrid::PlaceGrass()
+{
+  for (int x = 0; x < mapWidth; x++)
+  {
+    for (int y = 0; y < mapHeight; y++)
+    {
+      if (tileMap[x][terrainHeightValues[x]].type == dirt && 
+          tileMap[x][terrainHeightValues[x] - 1].type == air &&
+          y >= terrainHeightValues[x])
+      {
+        PlaceTile(grass, x, terrainHeightValues[x] - 1, tileMap);
+        terrainHeightValues[x] -= 1;
+      }
+    }
+  }
+}
+
+void WorldGrid::GenerateTrees()
+{
+  for (int x = 5; x < mapWidth - 10; x += (rand() % 10 + 5))
+  {
+    int yGround = terrainHeightValues[x];
+
+    if (tileMap[x][yGround - 1].type == air && tileMap[x][yGround].type == grass)
+    {
+      PlaceTree(x, yGround - 1);
+    }
+  }
+}
+
+void WorldGrid::PlaceTree(int x, int yGround)
+{
+  int treeHeight = rand() % 6 + 6; // Height of a tree excluding leaves
+
+  for (int y = yGround; y > yGround - treeHeight; y--)
+  {
+    PlaceTile(treeTrunk, x, y, tileMap);
+  }
+
+  // Leaf generation
+  int leafStart = yGround - treeHeight;
+  for (int dx = -2; dx <= 2; dx++)
+  {
+    for (int dy = -2; dy <= 1; dy++)
+    {
+      if (rand() % 100 < 80)
+      {
+        PlaceTile(leaves, x + dx, leafStart + dy, tileMap);
       }
     }
   }

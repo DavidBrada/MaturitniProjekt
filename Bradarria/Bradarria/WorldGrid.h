@@ -20,9 +20,9 @@ struct WorldGrid
 
   static const int mapWidth = 500;
   const int mapHeight = 400;
-
   int terrainHeightValues[mapWidth];
-
+  int worldSeed;
+  int seedOffset; // Seed gets offset by a random value for each block
 
   sf::Texture tileAtlasTexture;
   int xTileCount;
@@ -48,11 +48,14 @@ struct WorldGrid
   void GenerateTunnels();
   void SmoothCave(std::vector<std::vector<Tile>>& worldMap);
   void FillTiles();
+  void PlaceGrass();
 
   void GenerateStone();
   void GenerateIron();
+  void GenerateTrees();
+  void PlaceTree(int x, int yGround);
 
-  std::string blocks[6] = {"air", "dirt", "grass", "dirt background", "stone", "iron"}; // Hardcoded block count, change later
+  std::string blocks[8] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves"}; // Hardcoded block count, change later
 
   enum blockTypes
   {
@@ -61,6 +64,8 @@ struct WorldGrid
     grass,
     dirtBackground,
     stone,
-    iron
+    iron,
+    treeTrunk,
+    leaves
   };
 };

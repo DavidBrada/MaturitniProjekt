@@ -1,0 +1,43 @@
+{
+  "Blocks": [
+    {
+      "id": 0,
+      "name": "air",
+      "hasCollision": false,
+      "destroyable": false
+    },
+    {
+      "id": 1,
+      "name": "dirt",
+      "hasCollision": true,
+      "destroyable": true
+    },
+    {
+      "id": 2,
+      "name": "grass",
+      "hasCollision": true,
+      "destroyable": true
+    },
+    {
+      "id": 3,
+      "name": "dirtBackground",
+      "hasCollision": false,
+      "destroyable": false
+    },
+    {
+      "id": 4,
+      "name": "stone",
+      "hasCollision": true,
+      "destroyable": true,
+      "noiseOffset": 5796
+    },
+    {
+      "id": 5,
+      "name": "iron",
+      "hasCollision": true,
+      "destroyable": true,
+      "noiseOffset": 82506
+    }
+  ]
+}
+

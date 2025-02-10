@@ -139,7 +139,7 @@ int main()
       {
         worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
       }
-      if (worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].hasCollision &&
+      if (worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].mineable &&
           tileSelector.selectedType == 0)
       {
         if (settings.instaBreak)
@@ -156,7 +156,7 @@ int main()
         }
         else if (tileSelector.clickPosition.x == worldGrid.mousePosGrid.x &&
                   tileSelector.clickPosition.y == worldGrid.mousePosGrid.y &&
-                  worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].hasCollision)
+                  worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].mineable)
         {
           player.mining = true;
 

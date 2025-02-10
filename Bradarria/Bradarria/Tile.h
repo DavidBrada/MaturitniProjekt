@@ -8,4 +8,5 @@ struct Tile
   sf::Sprite sprite;
   sf::Vector2f position;
   bool hasCollision;
+  bool mineable;
 };
