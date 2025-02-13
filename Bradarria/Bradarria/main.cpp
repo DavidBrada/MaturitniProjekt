@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <iostream>
+#include <thread>
 #include "WorldGrid.h"
 #include "TileSelector.h"
 #include "UI.h"
@@ -8,36 +10,59 @@
 #include "Settings.h"
 #include "WorldGen.h"
 #include "FastNoiseLite.h"
+#include "LoadingScreen.h"
+
+void generateWorld(WorldGrid& worldGrid, int mapWidth, int mapHeight)
+{
+  worldGrid.Load();
+}
 
 int main()
 {
+
+  Settings settings;
+  settings.Load();
+  sf::RenderWindow window(sf::VideoMode(settings.windowWidth, settings.windowHeight), "Bradarria", sf::Style::Default);
+  window.setFramerateLimit(settings.fpsLimit);
+  window.setKeyRepeatEnabled(false);
+
+  LoadingScreen loadingScreen;
+  loadingScreen.Initialize();
+
+  window.clear();
+  window.draw(loadingScreen.sprite);
+  window.display();
+
+  WorldGrid worldGrid;
+  worldGrid.Initialize();
+
+  std::thread loadingThread(generateWorld, std::ref(worldGrid), worldGrid.mapWidth, worldGrid.mapHeight);
+  loadingThread.join();
+
+  sf::View view;
+  Player player;
+  UI ui;
+
   float dt = 0.f;
   sf::Clock dtClock;
   sf::Clock uiClock; // updates UI
 
+
   // Mouse position relative to the screen; used for debugging
   sf::Vector2i mousePosScreen = sf::Mouse::getPosition();
 
-  sf::RenderWindow window(sf::VideoMode(1920, 1080), "Bradarria", sf::Style::Default);
-  window.setFramerateLimit(60);
-  window.setKeyRepeatEnabled(false);
-
   //Create game objects
-  WorldGrid worldGrid;
+  
   TileSelector tileSelector;
-  Player player;
-  UI ui;
-  sf::View view;
   Item item;
-  Settings settings;
   WorldGen worldGen;
 
 
   // Initialize game objects
-  worldGrid.Initialize();
+  
   tileSelector.Initialize(worldGrid);
   ui.Initialize();
-  settings.Load();
+  
   
   player.Initialize(worldGrid.playerSpawnPos.x, worldGrid.playerSpawnPos.y, worldGrid);
   
@@ -132,6 +157,7 @@ int main()
 
       }
     }
+
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
       if (tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type &&
@@ -174,8 +200,6 @@ int main()
         }
       }
     }
-
-    player.gravityEnabled = true;
 
 #pragma region Rendering
 

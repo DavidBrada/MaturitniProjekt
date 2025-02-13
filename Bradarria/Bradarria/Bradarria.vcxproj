@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="LoadingScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Settings.cpp" />
@@ -150,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="AtlasTile.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="Tile.h" />

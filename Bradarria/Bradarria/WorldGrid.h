@@ -23,6 +23,7 @@ struct WorldGrid
   int terrainHeightValues[mapWidth];
   int worldSeed;
   int seedOffset; // Seed gets offset by a random value for each block
+  bool worldLoaded;
 
   sf::Texture tileAtlasTexture;
   int xTileCount;
@@ -41,6 +42,7 @@ struct WorldGrid
   void PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<Tile>>& worldMap);
 
   void Initialize();
+  void Load();
   void Update(sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, sf::View& view);
   void InitializeCave();

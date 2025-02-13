@@ -58,6 +58,7 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
   controlsText.setString(ss.str());
   ss.str(std::string());
 
+  //Player info
   ss << "Grounded: " << player.grounded << std::endl
     << "Colliding: " << player.colliding << std::endl
     << "X: " << std::floor((player.body.getPosition().x + player.width) / worldGrid.tileSize) << std::endl
@@ -76,10 +77,10 @@ void UI::Render(sf::RenderWindow& window)
 {
   if (visible)
   {
+    
     window.draw(gridInfoText);
     window.draw(playerInfoText);
   }
-
   window.draw(uiText);
   window.draw(controlsText);
 }

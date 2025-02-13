@@ -2,7 +2,7 @@
 
 void WorldGrid::Initialize()
 {
-  
+  worldLoaded = false;
   tileMap.resize(mapWidth, std::vector<Tile>());
 
   if (tileAtlasTexture.loadFromFile("assets/textures/texture_test.png"))
@@ -32,8 +32,11 @@ void WorldGrid::Initialize()
   {
     std::cout << "Failed to load tilesheet." << std::endl;
   }
+}
 
-  worldSeed = 12345;
+void WorldGrid::Load()
+{
+  worldSeed = 287593;
 
 
   // World gen
@@ -52,6 +55,8 @@ void WorldGrid::Initialize()
   GenerateIron();
   PlaceGrass();
   GenerateTrees();
+
+  worldLoaded = true;
 }
 
 
