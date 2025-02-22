@@ -36,7 +36,7 @@ void Player::Load()
 {
 }
 
-void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody)
+void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody, Inventory& inventory)
 {
   sf::Vector2f rayOrigin = sf::Vector2f(body.getPosition().x + body.getSize().x / 2, body.getPosition().y + body.getSize().y / 2);
   sf::Vector2f rayDirection = velocity * 20.f;
@@ -154,7 +154,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   {
     for (int y = yCanPlaceFrom; y < yCanPlaceTo; y++)
     {
-      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision)
+      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision && !inventory.inInventory)
       {
         canPlace = true;
       }

@@ -1,16 +1,14 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
 #include <iostream>
 #include <thread>
 #include "WorldGrid.h"
 #include "TileSelector.h"
 #include "UI.h"
 #include "Player.h"
-#include "Item.h"
 #include "Settings.h"
-#include "WorldGen.h"
 #include "FastNoiseLite.h"
 #include "LoadingScreen.h"
+#include "Inventory.h"
 
 void generateWorld(WorldGrid& worldGrid, int mapWidth, int mapHeight)
 {
@@ -19,9 +17,9 @@ void generateWorld(WorldGrid& worldGrid, int mapWidth, int mapHeight)
 
 int main()
 {
-
   Settings settings;
   settings.Load();
+
   sf::RenderWindow window(sf::VideoMode(settings.windowWidth, settings.windowHeight), "Bradarria", sf::Style::Default);
   window.setFramerateLimit(settings.fpsLimit);
   window.setKeyRepeatEnabled(false);
@@ -29,6 +27,7 @@ int main()
   LoadingScreen loadingScreen;
   loadingScreen.Initialize();
 
+  // Display loading screen before generating the world
   window.clear();
   window.draw(loadingScreen.sprite);
   window.display();
@@ -37,37 +36,31 @@ int main()
   worldGrid.Initialize();
 
   std::thread loadingThread(generateWorld, std::ref(worldGrid), worldGrid.mapWidth, worldGrid.mapHeight);
-  loadingThread.join();
+  loadingThread.join(); // Wait for thread to finish
 
   sf::View view;
   Player player;
   UI ui;
+  Inventory inventory;
 
   float dt = 0.f;
   sf::Clock dtClock;
   sf::Clock uiClock; // updates UI
 
-
   // Mouse position relative to the screen; used for debugging
   sf::Vector2i mousePosScreen = sf::Mouse::getPosition();
-
-  //Create game objects
   
   TileSelector tileSelector;
-  Item item;
-  WorldGen worldGen;
-
-
-  // Initialize game objects
   
   tileSelector.Initialize(worldGrid);
   ui.Initialize();
-  
-  
   player.Initialize(worldGrid.playerSpawnPos.x, worldGrid.playerSpawnPos.y, worldGrid);
+  inventory.Inicialize();
   
-  view.setSize(1920.f, 1080.f);
+  view.setSize(settings.windowWidth, settings.windowHeight);
   view.setCenter(sf::Vector2f(player.body.getPosition().x + player.width / 2, player.body.getPosition().y + player.height / 2)); // Initializes player view on player position
+
+  inventory.Load(view);
 
   while (window.isOpen())
   {
@@ -83,10 +76,10 @@ int main()
 
     //Update Game
     tileSelector.Update(worldGrid);
-    player.Update(dt, worldGrid, view, tileSelector.selectorBody);
+    player.Update(dt, worldGrid, view, tileSelector.selectorBody, inventory);
 
     // Update UI
-    ui.Update(worldGrid, tileSelector, player);
+    ui.Update(worldGrid, tileSelector, player, inventory);
     /*
     if (uiClock.getElapsedTime().asSeconds() >= ui.timeStep)
     {
@@ -97,8 +90,6 @@ int main()
     sf::Event event;
     while (window.pollEvent(event))
     {
-      if (event.type == sf::Event::Closed)
-        window.close();
       switch (event.type)
       {
       case sf::Event::Closed:
@@ -116,14 +107,11 @@ int main()
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab))
         {
-          if (ui.visible)
-          {
-            ui.visible = false;
-          }
-          else
-          {
-            ui.visible = true;
-          }
+          ui.visible = !ui.visible;
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+        {
+          inventory.open = !inventory.open;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
         {
@@ -158,6 +146,9 @@ int main()
       }
     }
 
+    inventory.Update(view, worldGrid, window);
+
+    // Mining and placing logic
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
       if (tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type &&
@@ -170,6 +161,8 @@ int main()
       {
         if (settings.instaBreak)
         {
+          tileSelector.minedType = worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type;
+
           if (worldGrid.mousePosGrid.y > worldGrid.terrainHeightValues[worldGrid.mousePosGrid.x])
           {
             worldGrid.PlaceTile(worldGrid.dirtBackground, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
@@ -178,17 +171,17 @@ int main()
           {
             worldGrid.PlaceTile(worldGrid.air, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
           }
-          
+
         }
         else if (tileSelector.clickPosition.x == worldGrid.mousePosGrid.x &&
-                  tileSelector.clickPosition.y == worldGrid.mousePosGrid.y &&
-                  worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].mineable)
+                 tileSelector.clickPosition.y == worldGrid.mousePosGrid.y &&
+                 worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].mineable)
         {
           player.mining = true;
 
           if (tileSelector.mineClock.getElapsedTime().asSeconds() >= 1.f)
           {
-            worldGrid.PlaceTile(0, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+            worldGrid.PlaceTile(worldGrid.air, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
           }
         }
         else
@@ -215,6 +208,7 @@ int main()
     // Render UI
     window.setView(window.getDefaultView());
     ui.Render(window);
+    inventory.Render(window);
 
     window.display();
 #pragma endregion

@@ -11,6 +11,7 @@ struct TileSelector
   sf::Clock mineClock;
 
   int selectedType = 0;
+  int minedType = 0;
 
   void Initialize(WorldGrid& worldGrid);
   void Update(WorldGrid& worldGrid);

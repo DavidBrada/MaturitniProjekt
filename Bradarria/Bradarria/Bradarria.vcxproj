@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -137,7 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Item.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="LoadingScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -145,19 +145,18 @@
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileSelector.cpp" />
     <ClCompile Include="UI.cpp" />
-    <ClCompile Include="WorldGen.cpp" />
     <ClCompile Include="WorldGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AtlasTile.h" />
-    <ClInclude Include="Item.h" />
+    <ClInclude Include="Inventory.h" />
+    <ClInclude Include="InventoryCell.h" />
     <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileSelector.h" />
     <ClInclude Include="UI.h" />
-    <ClInclude Include="WorldGen.h" />
     <ClInclude Include="WorldGrid.h" />
   </ItemGroup>
   <ItemGroup>

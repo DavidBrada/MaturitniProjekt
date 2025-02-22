@@ -3,14 +3,16 @@
 #include "Tile.h"
 #include "WorldGrid.h"
 #include "TileSelector.h"
+#include "Settings.h"
+#include "Inventory.h"
 
 class Player
 {
 public:
   int width = 25; // one tile is 16 wide, so it's a little more than one
   int height = 40; //  one tile is 16 tall
-  sf::RectangleShape body; // Player object that is displayed
-  sf::Sprite sprite;
+  sf::RectangleShape body; // Acts kinda like a hitbox visualisation
+  sf::Sprite sprite; // Actual player texture drawn on screen
   sf::Texture texture;
   float gravity = 0.f;
   bool colliding;
@@ -54,7 +56,7 @@ public:
 
   void Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid);
   void Load();
-  void Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody);
+  void Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody, Inventory& inventory);
   void Jump();
   bool RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& t_hit_near);
   bool IsColliding(const sf::RectangleShape& in, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& contactTime, float fElapsedTime);

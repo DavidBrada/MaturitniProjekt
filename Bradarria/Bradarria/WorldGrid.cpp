@@ -290,7 +290,7 @@ void WorldGrid::GenerateTerrain()
   }
 }
 
-// Fills the tiles randomly with air or dirt, this is then processed by the SmoothCave() function to generate caves
+// Fills the tiles randomly with air or dirt. This is then processed by the SmoothCave() function to generate caves
 void WorldGrid::InitializeCave()
 {
   for (int x = 0; x < mapWidth; x++)
@@ -348,7 +348,7 @@ void WorldGrid::SmoothCave(std::vector<std::vector<Tile>>& worldMap)
         }
       }
 
-      // if a tile is touching more than 4 tiles, it gets replaced with air
+      // if a tile is touching more than 4 solid tiles, it gets replaced with air
       if (neighborCount > 4) PlaceTile(0, x, y, newMap);
       else PlaceTile(1, x, y, newMap);
     }
@@ -390,8 +390,8 @@ void WorldGrid::GenerateIron()
 
   for (int x = 0; x < mapWidth; x++)
   {
-    for (int y = terrainHeightValues[x] + 20; y < mapHeight; y++)
-    { // Only underground
+    for (int y = terrainHeightValues[x] + 20; y < mapHeight; y++) // Starts 20 tiles underground
+    { 
       float noiseValue = ironNoise.GetNoise((float)x, (float)y);
 
       if (tileMap[x][y].type == stone && noiseValue > 0.8f)

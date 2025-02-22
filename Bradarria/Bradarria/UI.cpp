@@ -7,7 +7,7 @@ void UI::Initialize()
   gridInfoText.setCharacterSize(24);
   gridInfoText.setFillColor(sf::Color(255, 10, 255));
   gridInfoText.setFont(font);
-  gridInfoText.setPosition(20.f, 20.f);
+  gridInfoText.setPosition(550.f, 20.f);
   gridInfoText.setString(" NO TEXT ");
 
   uiText.setCharacterSize(36);
@@ -25,11 +25,11 @@ void UI::Initialize()
   playerInfoText.setCharacterSize(30);
   playerInfoText.setFillColor(sf::Color::White);
   playerInfoText.setFont(font);
-  playerInfoText.setPosition(1600.f, 600.f);
+  playerInfoText.setPosition(20.f, 400.f);
   playerInfoText.setString(" NO TEXT ");
 }
 
-void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player)
+void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory)
 {
   std::stringstream ss;
   Tile& hoveredTile = worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y];
@@ -68,6 +68,8 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
     << "Jumping: " << player.jumping << std::endl
     << "Input vel X: " << player.inputVelocity.x << std::endl
     << "Click Pos: " << tileSelector.clickPosition.x << ", " << tileSelector.clickPosition.y << std::endl
+    << "Last mined: " << worldGrid.blocks[tileSelector.minedType] << std::endl
+    << "In inventory: " << inventory.inInventory << std::endl
     << "Mining: " << player.mining << std::endl;
 
   playerInfoText.setString(ss.str());
