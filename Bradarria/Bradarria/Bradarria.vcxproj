@@ -142,7 +142,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Settings.cpp" />
-    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileSelector.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="WorldGrid.cpp" />

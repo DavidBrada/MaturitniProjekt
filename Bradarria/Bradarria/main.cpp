@@ -76,10 +76,13 @@ int main()
 
     //Update Game
     tileSelector.Update(worldGrid);
-    player.Update(dt, worldGrid, view, tileSelector.selectorBody, inventory);
+    player.Update(dt, worldGrid, view, tileSelector.selectorBody);
 
     // Update UI
     ui.Update(worldGrid, tileSelector, player, inventory);
+    inventory.Update(view, worldGrid, window);
+
+
     /*
     if (uiClock.getElapsedTime().asSeconds() >= ui.timeStep)
     {
@@ -137,6 +140,11 @@ int main()
         {
           tileSelector.GetClickPos(worldGrid);
           tileSelector.mineClock.restart();
+
+          if (inventory.inInventory)
+          {
+            inventory.GetClickPos();
+          }
         }
         break;
 
@@ -146,9 +154,10 @@ int main()
       }
     }
 
-    inventory.Update(view, worldGrid, window);
 
-    // Mining and placing logic
+
+    // Mining and placing logic. This can't be put into a function. 
+    // It's throwing a syntax error or says that the function doesn't take 3 arguments when it has 3 arguments for some reason
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
       if (tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type &&
@@ -171,6 +180,44 @@ int main()
           {
             worldGrid.PlaceTile(worldGrid.air, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
           }
+#pragma region StoreItem
+          // This will only store one of each block on every cell. will need to be changed
+          for (int i = 0; i < inventory.inventorySize; i++)
+          {
+            if (inventory.storedItems[i] == tileSelector.minedType)
+            {
+              for (int x = 0; x < inventory.xCellCount; x++)
+              {
+                for (int y = 0; y < inventory.yCellCount; y++)
+                {
+                  if (inventory.container[x][y].id == i)
+                  {
+                    inventory.container[x][y].quantity++;
+                  }
+                }
+              }
+              break;
+            }
+            else if (inventory.storedItems[i] == -1)
+            {
+              inventory.storedItems[i] = tileSelector.minedType;
+
+              for (int x = 0; x < inventory.xCellCount; x++)
+              {
+                for (int y = 0; y < inventory.yCellCount; y++)
+                {
+                  if (inventory.container[x][y].id == i)
+                  {
+                    inventory.SetSprite(tileSelector.minedType, x, y, worldGrid.tileAtlasTexture,worldGrid.atlasTiles);
+                    std::cout << inventory.container[x][y].itemSprite.getPosition().x << std::endl;
+                  }
+                }
+              }
+              break;
+            }
+
+          }
+#pragma endregion
 
         }
         else if (tileSelector.clickPosition.x == worldGrid.mousePosGrid.x &&
@@ -191,6 +238,9 @@ int main()
           tileSelector.clickPosition.y = worldGrid.mousePosGrid.y;
           player.mining = false;
         }
+
+
+        
       }
     }
 

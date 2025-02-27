@@ -6,7 +6,7 @@ void LoadingScreen::Initialize()
   {
     sprite.setTexture(loadingScreenTexture);
 
-    std::cout << "Succesfully loaded loading screen" << std::endl;
+    std::cout << "Successfully loaded loading screen" << std::endl;
   }
   else
   {

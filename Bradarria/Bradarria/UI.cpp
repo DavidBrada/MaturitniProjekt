@@ -25,8 +25,13 @@ void UI::Initialize()
   playerInfoText.setCharacterSize(30);
   playerInfoText.setFillColor(sf::Color::White);
   playerInfoText.setFont(font);
-  playerInfoText.setPosition(20.f, 400.f);
+  playerInfoText.setPosition(20.f, 300.f);
   playerInfoText.setString(" NO TEXT ");
+
+  inventoryText.setCharacterSize(18);
+  inventoryText.setFillColor(sf::Color::Black);
+  inventoryText.setFont(font);
+  inventoryText.setString(" NO TEXT ");
 }
 
 void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory)
@@ -70,19 +75,33 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
     << "Click Pos: " << tileSelector.clickPosition.x << ", " << tileSelector.clickPosition.y << std::endl
     << "Last mined: " << worldGrid.blocks[tileSelector.minedType] << std::endl
     << "In inventory: " << inventory.inInventory << std::endl
+    << "Inventory pos: " << inventory.mousePosInventory.x << ", " << inventory.mousePosInventory.y << std::endl
+    << "Inventory click pos: " << inventory.clickPosition.x << ", " << inventory.clickPosition.y << "; ID: " << inventory.container[inventory.clickPosition.x][inventory.clickPosition.y].id << std::endl
     << "Mining: " << player.mining << std::endl;
 
   playerInfoText.setString(ss.str());
+  ss.str(std::string());
+
+  for (int x = 0; x < inventory.xCellCount; x++)
+  {
+    for (int y = 0; y < inventory.yCellCount; y++)
+    {
+      inventory.container[x][y].text.setPosition(sf::Vector2f(x * (inventory.renderCellSize + inventory.gap) + inventory.margin, y * (inventory.renderCellSize + inventory.gap) + inventory.margin));
+      //inventory.container[x][y].text = std::to_string(inventory.container[x][y].quantity);
+      ss << inventory.container[x][y].quantity;
+      inventoryText.setString(ss.str());
+    }
+  }
 }
 
 void UI::Render(sf::RenderWindow& window)
 {
   if (visible)
   {
-    
     window.draw(gridInfoText);
     window.draw(playerInfoText);
   }
   window.draw(uiText);
   window.draw(controlsText);
+  
 }

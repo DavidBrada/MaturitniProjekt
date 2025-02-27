@@ -10,11 +10,11 @@ class Player
 {
 public:
   int width = 25; // one tile is 16 wide, so it's a little more than one
-  int height = 40; //  one tile is 16 tall
+  int height = 40; //  one tile is 16 tall, so it's a little more than two
   sf::RectangleShape body; // Acts kinda like a hitbox visualisation
   sf::Sprite sprite; // Actual player texture drawn on screen
   sf::Texture texture;
-  float gravity = 0.f;
+  float gravity = 0.f; // Initialized here to zero, because i had problems with the player falling through the map and now I don't wanna touch it cuz it would definitely break everyting
   bool colliding;
   bool bodyOutOfCamBounds; // set to true when the player goes a certain distance from the view center
 
@@ -24,6 +24,8 @@ public:
   float moveSpeed = 150.f;
   sf::Clock jumpCooldown;
   sf::Clock jumpTimer;
+
+  // More stupid code
   float defaultJumpForce = 900.f; // Since jumpForce is devided by the fade value, this stores the original one
   float jumpForce;
   float jumpForceFade = 1.1f; // how quickly jumpforce loses its value (jumpForce is devided by this value)
@@ -56,7 +58,7 @@ public:
 
   void Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid);
   void Load();
-  void Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody, Inventory& inventory);
+  void Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody);
   void Jump();
   bool RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& t_hit_near);
   bool IsColliding(const sf::RectangleShape& in, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& contactTime, float fElapsedTime);

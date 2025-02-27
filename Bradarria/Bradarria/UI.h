@@ -13,10 +13,11 @@ class UI
   sf::Text uiText;
   sf::Text controlsText;
   sf::Text playerInfoText;
+  sf::Text inventoryText;
 
 public:
   bool visible = true;
-  float timeStep = 0.1f; // Time step of UI in seconds
+  float timeStep = 0.1f; // Time step of UI in seconds, it's probably useless tho
 
 public:
   void Initialize();

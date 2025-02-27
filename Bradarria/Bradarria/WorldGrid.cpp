@@ -91,90 +91,44 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
   case air:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = false;
-    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
-      atlasTiles[type].position.x,
-      atlasTiles[type].position.y,
-      tileSize,
-      tileSize
-    ));
     break;
 
   case dirt:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
-    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
-      atlasTiles[type].position.x,
-      atlasTiles[type].position.y,
-      tileSize,
-      tileSize
-    ));
     break;
     
   case grass:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
-    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
-      atlasTiles[type].position.x,
-      atlasTiles[type].position.y,
-      tileSize,
-      tileSize
-    ));
     break;
 
   case dirtBackground:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = false;
-    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
-      atlasTiles[type].position.x,
-      atlasTiles[type].position.y,
-      tileSize,
-      tileSize
-    ));
     break;
 
   case stone:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
-    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
-      atlasTiles[type].position.x,
-      atlasTiles[type].position.y,
-      tileSize,
-      tileSize
-    ));
     break;
 
   case iron:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
-    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
-      atlasTiles[type].position.x,
-      atlasTiles[type].position.y,
-      tileSize,
-      tileSize
-    ));
     break;
 
   case treeTrunk:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
-    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
-      atlasTiles[type].position.x,
-      atlasTiles[type].position.y,
-      tileSize,
-      tileSize
-    ));
     break;
   case leaves:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
-    worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
-      atlasTiles[type].position.x,
-      atlasTiles[type].position.y,
-      tileSize,
-      tileSize
-    ));
     break;
   }
+
+  SetSprite(type, xPos, yPos, worldMap);
   worldMap[xPos][yPos].type = type;
 }
 
@@ -233,6 +187,16 @@ void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
       window.draw(tileMap[x][y].sprite);
     }
   }
+}
+
+void WorldGrid::SetSprite(int type, float xPos, float yPos, std::vector<std::vector<Tile>>& worldMap)
+{
+  worldMap[xPos][yPos].sprite.setTextureRect(sf::IntRect(
+    atlasTiles[type].position.x,
+    atlasTiles[type].position.y,
+    tileSize,
+    tileSize
+  ));
 }
 
 void WorldGrid::GenerateTerrain()
@@ -349,6 +313,7 @@ void WorldGrid::SmoothCave(std::vector<std::vector<Tile>>& worldMap)
       }
 
       // if a tile is touching more than 4 solid tiles, it gets replaced with air
+      // For whatever reason this actually works
       if (neighborCount > 4) PlaceTile(0, x, y, newMap);
       else PlaceTile(1, x, y, newMap);
     }

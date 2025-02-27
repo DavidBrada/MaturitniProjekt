@@ -18,19 +18,19 @@ struct WorldGrid
   float tileSize = 16.f;
   unsigned tileSizeU = static_cast<unsigned>(tileSize);
 
-  static const int mapWidth = 500;
+  static const int mapWidth = 500; // made static because of that stupid array two lines below
   const int mapHeight = 400;
   int terrainHeightValues[mapWidth];
   int worldSeed;
   int seedOffset; // Seed gets offset by a random value for each block
-  bool worldLoaded;
+  bool worldLoaded; // This is probably not necessary
 
-  sf::Texture tileAtlasTexture;
+  sf::Texture tileAtlasTexture; // The whole tile atlas
   int xTileCount;
   int yTileCount;
   int tileCount;
 
-  int groundLevel = 200;
+  int groundLevel = 200; // Idk why this is initialized here
   int terrainHeight;
 
   // Used for culling (rendering optimalization)
@@ -45,6 +45,9 @@ struct WorldGrid
   void Load();
   void Update(sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, sf::View& view);
+
+  void SetSprite(int type, float xPos, float yPos, std::vector<std::vector<Tile>>& worldMap);
+
   void InitializeCave();
   void GenerateTerrain();
   void GenerateTunnels();
@@ -57,7 +60,7 @@ struct WorldGrid
   void GenerateTrees();
   void PlaceTree(int x, int yGround);
 
-  std::string blocks[8] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves"}; // Hardcoded block count, change later
+  std::string blocks[8] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves"}; // Hardcoded block count, change later (I won't) 
 
   enum blockTypes
   {

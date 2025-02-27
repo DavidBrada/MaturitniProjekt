@@ -34,9 +34,10 @@ void Player::Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid)
 
 void Player::Load()
 {
+  // The only function without bugs
 }
 
-void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody, Inventory& inventory)
+void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody)
 {
   sf::Vector2f rayOrigin = sf::Vector2f(body.getPosition().x + body.getSize().x / 2, body.getPosition().y + body.getSize().y / 2);
   sf::Vector2f rayDirection = velocity * 20.f;
@@ -112,7 +113,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   yCanPlaceTo = worldGrid.mousePosGrid.y + 2;
 
 #pragma region mapEdgeConditions
-
+  // if if if if if if if
   if (xCanPlaceFrom < 0)
   {
     xCanPlaceFrom = 0;
@@ -154,7 +155,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   {
     for (int y = yCanPlaceFrom; y < yCanPlaceTo; y++)
     {
-      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision && !inventory.inInventory)
+      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision)
       {
         canPlace = true;
       }
