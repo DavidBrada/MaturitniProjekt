@@ -28,8 +28,8 @@ void UI::Initialize()
   playerInfoText.setPosition(20.f, 300.f);
   playerInfoText.setString(" NO TEXT ");
 
-  inventoryText.setCharacterSize(18);
-  inventoryText.setFillColor(sf::Color::Black);
+  inventoryText.setCharacterSize(16);
+  inventoryText.setFillColor(sf::Color::Yellow);
   inventoryText.setFont(font);
   inventoryText.setString(" NO TEXT ");
 }
@@ -82,19 +82,42 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
   playerInfoText.setString(ss.str());
   ss.str(std::string());
 
-  for (int x = 0; x < inventory.xCellCount; x++)
+}
+
+void UI::UpdateInventory(Inventory& inventory, sf::RenderWindow& window)
+{
+  std::stringstream ss;
+
+  if (inventory.open)
   {
     for (int y = 0; y < inventory.yCellCount; y++)
     {
-      inventory.container[x][y].text.setPosition(sf::Vector2f(x * (inventory.renderCellSize + inventory.gap) + inventory.margin, y * (inventory.renderCellSize + inventory.gap) + inventory.margin));
-      //inventory.container[x][y].text = std::to_string(inventory.container[x][y].quantity);
-      ss << inventory.container[x][y].quantity;
-      inventoryText.setString(ss.str());
+      for (int x = 0; x < inventory.xCellCount; x++)
+      {
+        ss << inventory.container[x][y].quantity;
+        inventoryText.setString(ss.str());
+        inventoryText.setPosition(sf::Vector2f(x * (inventory.renderCellSize + inventory.gap) + inventory.margin, y * (inventory.renderCellSize + inventory.gap) + inventory.margin));
+        window.draw(inventoryText);
+        ss.str(std::string());
+      }
     }
   }
+  else
+  {
+    int y = 0;
+    for (int x = 0; x < inventory.xCellCount; x++)
+    {
+      ss << inventory.container[x][y].quantity;
+      inventoryText.setString(ss.str());
+      inventoryText.setPosition(sf::Vector2f((x * (inventory.renderCellSize + inventory.gap) + inventory.margin) + inventory.renderCellSize / 4, (y * (inventory.renderCellSize + inventory.gap) + inventory.margin) + inventory.renderCellSize / 3));
+      window.draw(inventoryText);
+      ss.str(std::string());
+    }
+  }
+
 }
 
-void UI::Render(sf::RenderWindow& window)
+void UI::Render(sf::RenderWindow& window, Inventory& inventory)
 {
   if (visible)
   {
@@ -103,5 +126,4 @@ void UI::Render(sf::RenderWindow& window)
   }
   window.draw(uiText);
   window.draw(controlsText);
-  
 }

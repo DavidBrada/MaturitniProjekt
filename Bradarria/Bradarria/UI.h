@@ -22,6 +22,7 @@ public:
 public:
   void Initialize();
   void Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory);
-  void Render(sf::RenderWindow& window);
+  void UpdateInventory(Inventory& inventory, sf::RenderWindow& window);
+  void Render(sf::RenderWindow& window, Inventory& inventory);
 };
 

@@ -8,7 +8,7 @@ public:
   sf::RectangleShape logicBody; // This object detects mouse position
 
   sf::Sprite itemSprite;
-  sf::Sprite text;
+  sf::Text text;
 
   bool isEmpty;
   int quantity; // How much of one block is stored in this cell

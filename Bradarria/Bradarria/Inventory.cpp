@@ -35,8 +35,9 @@ void Inventory::Load(sf::View& view)
     for (int y = 0; y < yCellCount; y++)
     {
       container[x][y].renderBody.setPosition(sf::Vector2f(x * (renderCellSize + gap) + margin, y * (renderCellSize + gap) + margin));
+      container[x][y].renderBody.setFillColor(sf::Color::Blue);
       container[x][y].renderBody.setOutlineThickness(2);
-      container[x][y].renderBody.setOutlineColor(sf::Color::Blue);
+      container[x][y].renderBody.setOutlineColor(sf::Color::White);
 
       // These won't be rednered in release DELETE LATER
       container[x][y].logicBody.setPosition(sf::Vector2f((x * logicCellSize + margin) - gap / 2, (y * logicCellSize + margin) - gap / 2));

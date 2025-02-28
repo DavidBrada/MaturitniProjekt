@@ -257,8 +257,9 @@ int main()
 
     // Render UI
     window.setView(window.getDefaultView());
-    ui.Render(window);
     inventory.Render(window);
+    ui.UpdateInventory(inventory, window);
+    ui.Render(window, inventory);
 
     window.display();
 #pragma endregion
