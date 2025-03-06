@@ -1,6 +1,5 @@
 #pragma once
 #include "WorldGrid.h"
-#include "Player.h"
 
 #include "SFML/Graphics.hpp"
 struct TileSelector
@@ -9,6 +8,7 @@ struct TileSelector
   sf::Vector2f selectorPosition;
   sf::Vector2f clickPosition;
   sf::Clock mineClock;
+  float timeToMine = 0.5f;
 
   int selectedType = 0;
   int minedType = 0;

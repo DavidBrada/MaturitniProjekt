@@ -32,6 +32,7 @@ int main()
   window.draw(loadingScreen.sprite);
   window.display();
 
+
   WorldGrid worldGrid;
   worldGrid.Initialize();
 
@@ -47,6 +48,7 @@ int main()
   sf::Clock dtClock;
   sf::Clock uiClock; // updates UI
 
+
   // Mouse position relative to the screen; used for debugging
   sf::Vector2i mousePosScreen = sf::Mouse::getPosition();
   
@@ -54,13 +56,13 @@ int main()
   
   tileSelector.Initialize(worldGrid);
   ui.Initialize();
-  player.Initialize(worldGrid.playerSpawnPos.x, worldGrid.playerSpawnPos.y, worldGrid);
+  player.Initialize(worldGrid.playerSpawnPos.x, worldGrid.playerSpawnPos.y);
   inventory.Inicialize();
   
   view.setSize(settings.windowWidth, settings.windowHeight);
   view.setCenter(sf::Vector2f(player.body.getPosition().x + player.width / 2, player.body.getPosition().y + player.height / 2)); // Initializes player view on player position
 
-  inventory.Load(view);
+  inventory.Load();
 
   while (window.isOpen())
   {
@@ -80,8 +82,7 @@ int main()
 
     // Update UI
     ui.Update(worldGrid, tileSelector, player, inventory);
-    inventory.Update(view, worldGrid, window);
-
+    inventory.Update(worldGrid, window);
 
     /*
     if (uiClock.getElapsedTime().asSeconds() >= ui.timeStep)
@@ -120,19 +121,49 @@ int main()
         {
           window.close();
         }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+        {
+          settings.instaBreak = !settings.instaBreak;
+        }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
         {
-          tileSelector.selectedType = 0;
+          inventory.selectedPosition = sf::Vector2f(0, 0);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
         {
-          tileSelector.selectedType = 1;
+          inventory.selectedPosition = sf::Vector2f(1, 0);
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
         {
-          tileSelector.selectedType = 2;
+          inventory.selectedPosition = sf::Vector2f(2, 0);
         }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
+        {
+          inventory.selectedPosition = sf::Vector2f(3, 0);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5))
+        {
+          inventory.selectedPosition = sf::Vector2f(4, 0);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6))
+        {
+          inventory.selectedPosition = sf::Vector2f(5, 0);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7))
+        {
+          inventory.selectedPosition = sf::Vector2f(6, 0);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8))
+        {
+          inventory.selectedPosition = sf::Vector2f(7, 0);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9))
+        {
+          inventory.selectedPosition = sf::Vector2f(8, 0);
+        }
+
+        tileSelector.selectedType = inventory.storedItems[inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].id];
         break;
 
       case sf::Event::MouseButtonPressed:
@@ -144,79 +175,109 @@ int main()
           if (inventory.inInventory)
           {
             inventory.GetClickPos();
+            if (inventory.storedItems[inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].id] != -1)
+            {
+              tileSelector.selectedType = inventory.storedItems[inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].id];
+            }
           }
         }
         break;
 
       case sf::Event::MouseButtonReleased:
         player.mining = false;
-
       }
     }
-
-
 
     // Mining and placing logic. This can't be put into a function. 
     // It's throwing a syntax error or says that the function doesn't take 3 arguments when it has 3 arguments for some reason
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
       if (tileSelector.selectedType != worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type &&
-          player.canPlace && tileSelector.selectedType != 0)
+          player.canPlace && tileSelector.selectedType != 0 && inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].quantity > 0)
       {
         worldGrid.PlaceTile(tileSelector.selectedType, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+        inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].quantity--;
       }
       if (worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].mineable &&
           tileSelector.selectedType == 0)
       {
+        player.mining = true;
         if (settings.instaBreak)
         {
-          tileSelector.minedType = worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type;
+          tileSelector.timeToMine = 0.f;
 
-          if (worldGrid.mousePosGrid.y > worldGrid.terrainHeightValues[worldGrid.mousePosGrid.x])
+          if (tileSelector.mineClock.getElapsedTime().asSeconds() >= tileSelector.timeToMine)
           {
-            worldGrid.PlaceTile(worldGrid.dirtBackground, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
-          }
-          else
-          {
-            worldGrid.PlaceTile(worldGrid.air, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
-          }
+            tileSelector.minedType = worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type;
+
+            if (worldGrid.mousePosGrid.y > worldGrid.terrainHeightValues[worldGrid.mousePosGrid.x])
+            {
+              worldGrid.PlaceTile(worldGrid.dirtBackground, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+            }
+            else
+            {
+              worldGrid.PlaceTile(worldGrid.air, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+            }
 #pragma region StoreItem
-          // This will only store one of each block on every cell. will need to be changed
-          for (int i = 0; i < inventory.inventorySize; i++)
-          {
-            if (inventory.storedItems[i] == tileSelector.minedType)
+            for (int i = 0; i < inventory.inventorySize; i++)
             {
-              for (int x = 0; x < inventory.xCellCount; x++)
+              if (inventory.storedItems[i] == tileSelector.minedType)
               {
-                for (int y = 0; y < inventory.yCellCount; y++)
+                for (int x = 0; x < inventory.xCellCount; x++)
                 {
-                  if (inventory.container[x][y].id == i)
+                  for (int y = 0; y < inventory.yCellCount; y++)
                   {
-                    inventory.container[x][y].quantity++;
+                    if (inventory.container[x][y].id == i)
+                    {
+                      inventory.container[x][y].quantity++;
+                    }
                   }
                 }
-              }
-              break;
-            }
-            else if (inventory.storedItems[i] == -1)
-            {
-              inventory.storedItems[i] = tileSelector.minedType;
 
-              for (int x = 0; x < inventory.xCellCount; x++)
+                break;
+              }
+              else if (inventory.storedItems[i] == 0)
               {
-                for (int y = 0; y < inventory.yCellCount; y++)
+                inventory.storedItems[i] = tileSelector.minedType;
+
+                for (int x = 0; x < inventory.xCellCount; x++)
                 {
-                  if (inventory.container[x][y].id == i)
+                  for (int y = 0; y < inventory.yCellCount; y++)
                   {
-                    inventory.SetSprite(tileSelector.minedType, x, y, worldGrid.tileAtlasTexture,worldGrid.atlasTiles);
-                    std::cout << inventory.container[x][y].itemSprite.getPosition().x << std::endl;
+                    if (inventory.container[x][y].id == i)
+                    {
+                      inventory.SetSprite(tileSelector.minedType, x, y, worldGrid.tileAtlasTexture, worldGrid.atlasTiles);
+                      inventory.container[x][y].quantity++;
+                    }
                   }
                 }
+                break;
               }
-              break;
-            }
 
+              /*
+              if (inventory.storedItems[i] != 0)
+              {
+                for (int r = 0; r < workbench.craftingRecepie.size(); r++)
+                {
+                  if (workbench.craftingRecepie[r].first == inventory.storedItems[i])
+                  {
+                    for (int x = 0; x < inventory.xCellCount; x++)
+                    {
+                      for (int y = 0; y < inventory.xCellCount; y++)
+                      {
+                        if (inventory.container[x][y].id == inventory.storedItems[i] && inventory.container[x][y].quantity >= workbench.craftingRecepie[r].second)
+                        {
+                          workbench.crafrable = true;
+                        }
+                      }
+                    }
+                  }
+                }
+              }*/
+            }
           }
+
+          
 #pragma endregion
 
         }
@@ -224,11 +285,77 @@ int main()
                  tileSelector.clickPosition.y == worldGrid.mousePosGrid.y &&
                  worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].mineable)
         {
-          player.mining = true;
+          tileSelector.timeToMine = 0.5f;
 
-          if (tileSelector.mineClock.getElapsedTime().asSeconds() >= 1.f)
+          if (tileSelector.mineClock.getElapsedTime().asSeconds() >= tileSelector.timeToMine)
           {
-            worldGrid.PlaceTile(worldGrid.air, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+            tileSelector.minedType = worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type;
+
+            if (worldGrid.mousePosGrid.y > worldGrid.terrainHeightValues[worldGrid.mousePosGrid.x])
+            {
+              worldGrid.PlaceTile(worldGrid.dirtBackground, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+            }
+            else
+            {
+              worldGrid.PlaceTile(worldGrid.air, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
+            }
+#pragma region StoreItem
+            for (int i = 0; i < inventory.inventorySize; i++)
+            {
+              if (inventory.storedItems[i] == tileSelector.minedType)
+              {
+                for (int x = 0; x < inventory.xCellCount; x++)
+                {
+                  for (int y = 0; y < inventory.yCellCount; y++)
+                  {
+                    if (inventory.container[x][y].id == i)
+                    {
+                      inventory.container[x][y].quantity++;
+                    }
+                  }
+                }
+
+                break;
+              }
+              else if (inventory.storedItems[i] == 0)
+              {
+                inventory.storedItems[i] = tileSelector.minedType;
+
+                for (int x = 0; x < inventory.xCellCount; x++)
+                {
+                  for (int y = 0; y < inventory.yCellCount; y++)
+                  {
+                    if (inventory.container[x][y].id == i)
+                    {
+                      inventory.SetSprite(tileSelector.minedType, x, y, worldGrid.tileAtlasTexture, worldGrid.atlasTiles);
+                      inventory.container[x][y].quantity++;
+                    }
+                  }
+                }
+                break;
+              }
+
+              /*
+              if (inventory.storedItems[i] != 0)
+              {
+                for (int r = 0; r < workbench.craftingRecepie.size(); r++)
+                {
+                  if (workbench.craftingRecepie[r].first == inventory.storedItems[i])
+                  {
+                    for (int x = 0; x < inventory.xCellCount; x++)
+                    {
+                      for (int y = 0; y < inventory.xCellCount; y++)
+                      {
+                        if (inventory.container[x][y].id == inventory.storedItems[i] && inventory.container[x][y].quantity >= workbench.craftingRecepie[r].second)
+                        {
+                          workbench.crafrable = true;
+                        }
+                      }
+                    }
+                  }
+                }
+              }*/
+            }
           }
         }
         else
@@ -238,9 +365,6 @@ int main()
           tileSelector.clickPosition.y = worldGrid.mousePosGrid.y;
           player.mining = false;
         }
-
-
-        
       }
     }
 

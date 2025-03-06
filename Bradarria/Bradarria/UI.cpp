@@ -25,7 +25,7 @@ void UI::Initialize()
   playerInfoText.setCharacterSize(30);
   playerInfoText.setFillColor(sf::Color::White);
   playerInfoText.setFont(font);
-  playerInfoText.setPosition(20.f, 300.f);
+  playerInfoText.setPosition(1500.f, 320.f);
   playerInfoText.setString(" NO TEXT ");
 
   inventoryText.setCharacterSize(16);
@@ -76,7 +76,7 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
     << "Last mined: " << worldGrid.blocks[tileSelector.minedType] << std::endl
     << "In inventory: " << inventory.inInventory << std::endl
     << "Inventory pos: " << inventory.mousePosInventory.x << ", " << inventory.mousePosInventory.y << std::endl
-    << "Inventory click pos: " << inventory.clickPosition.x << ", " << inventory.clickPosition.y << "; ID: " << inventory.container[inventory.clickPosition.x][inventory.clickPosition.y].id << std::endl
+    << "Inventory click pos: " << inventory.selectedPosition.x << ", " << inventory.selectedPosition.y << "; ID: " << inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].id << std::endl
     << "Mining: " << player.mining << std::endl;
 
   playerInfoText.setString(ss.str());
@@ -94,11 +94,14 @@ void UI::UpdateInventory(Inventory& inventory, sf::RenderWindow& window)
     {
       for (int x = 0; x < inventory.xCellCount; x++)
       {
-        ss << inventory.container[x][y].quantity;
-        inventoryText.setString(ss.str());
-        inventoryText.setPosition(sf::Vector2f(x * (inventory.renderCellSize + inventory.gap) + inventory.margin, y * (inventory.renderCellSize + inventory.gap) + inventory.margin));
-        window.draw(inventoryText);
-        ss.str(std::string());
+        if (inventory.container[x][y].quantity > 0)
+        {
+          ss << inventory.container[x][y].quantity;
+          inventoryText.setString(ss.str());
+          inventoryText.setPosition(sf::Vector2f((x * (inventory.renderCellSize + inventory.gap) + inventory.margin) + inventory.renderCellSize / 3, (y * (inventory.renderCellSize + inventory.gap) + inventory.margin) + inventory.renderCellSize / 3));
+          window.draw(inventoryText);
+          ss.str(std::string());
+        }
       }
     }
   }
@@ -107,11 +110,14 @@ void UI::UpdateInventory(Inventory& inventory, sf::RenderWindow& window)
     int y = 0;
     for (int x = 0; x < inventory.xCellCount; x++)
     {
-      ss << inventory.container[x][y].quantity;
-      inventoryText.setString(ss.str());
-      inventoryText.setPosition(sf::Vector2f((x * (inventory.renderCellSize + inventory.gap) + inventory.margin) + inventory.renderCellSize / 4, (y * (inventory.renderCellSize + inventory.gap) + inventory.margin) + inventory.renderCellSize / 3));
-      window.draw(inventoryText);
-      ss.str(std::string());
+      if (inventory.container[x][y].quantity > 0)
+      {
+        ss << inventory.container[x][y].quantity;
+        inventoryText.setString(ss.str());
+        inventoryText.setPosition(sf::Vector2f((x * (inventory.renderCellSize + inventory.gap) + inventory.margin) + inventory.renderCellSize / 3, (y * (inventory.renderCellSize + inventory.gap) + inventory.margin) + inventory.renderCellSize / 3));
+        window.draw(inventoryText);
+        ss.str(std::string());
+      }
     }
   }
 
@@ -123,7 +129,7 @@ void UI::Render(sf::RenderWindow& window, Inventory& inventory)
   {
     window.draw(gridInfoText);
     window.draw(playerInfoText);
+    window.draw(controlsText);
   }
   window.draw(uiText);
-  window.draw(controlsText);
 }

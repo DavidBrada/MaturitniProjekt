@@ -1,6 +1,6 @@
 #include "Player.h"
 
-void Player::Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid)
+void Player::Initialize(float xStartPos, float yStartPos)
 {
   gravity = 300.f;
   velocity = sf::Vector2f(0.f, 0.f);
@@ -106,6 +106,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   }
 
   canPlace = false;
+  tileSelectorBody.setOutlineColor(sf::Color::Red);
 
   xCanPlaceFrom = worldGrid.mousePosGrid.x - 1;
   xCanPlaceTo = worldGrid.mousePosGrid.x + 2;
@@ -155,9 +156,11 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   {
     for (int y = yCanPlaceFrom; y < yCanPlaceTo; y++)
     {
-      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision)
+      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision &&
+          InArea(tileSelectorBody, 5 * worldGrid.tileSize))
       {
         canPlace = true;
+        tileSelectorBody.setOutlineColor(sf::Color::Yellow);
       }
     }
   }
@@ -240,7 +243,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
 
 #pragma endregion
 
-    // Move camera with player on x
+  // Move camera with player on x
   if (velocity.x > 0.f)
   {
     view.move(moveSpeed * deltaTime, 0.f);
@@ -284,6 +287,11 @@ bool Player::IsGrounded(const sf::RectangleShape& cBody, const sf::RectangleShap
     if (contactTime < 1.f) return true;
   }
   return false;
+}
+
+bool Player::InArea(sf::RectangleShape& other, int maxDistance)
+{
+  return abs(body.getPosition().x - other.getPosition().x) < maxDistance && abs(body.getPosition().y - other.getPosition().y) < maxDistance;
 }
 
 // cBody is a moving rectangle, target is a static rectangle, that is being checked for collisions

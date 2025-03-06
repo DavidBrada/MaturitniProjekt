@@ -56,12 +56,13 @@ public:
   int cFromY = 0;
   int cToY = 0;
 
-  void Initialize(float xStartPos, float yStartPos, WorldGrid& worldGrid);
+  void Initialize(float xStartPos, float yStartPos);
   void Load();
   void Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody);
   void Jump();
   bool RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& t_hit_near);
   bool IsColliding(const sf::RectangleShape& in, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& contactTime, float fElapsedTime);
   bool IsGrounded(const sf::RectangleShape& in, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& contactTime, float fElapsedTime);
+  bool InArea(sf::RectangleShape& other, int maxDistance); // If a player can perform an action based on the distance from an object
   void Draw(sf::RenderWindow& window, WorldGrid& worldGrid);
 };

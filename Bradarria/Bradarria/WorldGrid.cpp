@@ -32,6 +32,15 @@ void WorldGrid::Initialize()
   {
     std::cout << "Failed to load tilesheet." << std::endl;
   }
+
+  /*
+  Item workbench;
+
+  workbench.crafrable = false;
+  workbench.craftingRecepie.push_back({ 6, 5 });
+  inventory.SetSprite(workbench, blockTypes::workbench, tileAtlasTexture, atlasTiles);*/
+
+  //items.push_back(workbench);
 }
 
 void WorldGrid::Load()
@@ -53,6 +62,7 @@ void WorldGrid::Load()
 
   GenerateStone();
   GenerateIron();
+  GenerateCoal();
   PlaceGrass();
   GenerateTrees();
 
@@ -123,9 +133,15 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
     worldMap[xPos][yPos].mineable = true;
     break;
   case leaves:
-    worldMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].hasCollision = true; 
     worldMap[xPos][yPos].mineable = true;
     break;
+  case workbench:
+    worldMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].mineable = true;
+  case coal:
+    worldMap[xPos][yPos].hasCollision = true;
+    worldMap[xPos][yPos].mineable = true;
   }
 
   SetSprite(type, xPos, yPos, worldMap);
@@ -415,6 +431,29 @@ void WorldGrid::PlaceTree(int x, int yGround)
       if (rand() % 100 < 80)
       {
         PlaceTile(leaves, x + dx, leafStart + dy, tileMap);
+      }
+    }
+  }
+}
+
+void WorldGrid::GenerateCoal()
+{
+  FastNoiseLite coalNoise;
+
+  seedOffset = 69420;
+  coalNoise.SetSeed(worldSeed + seedOffset);
+  coalNoise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+  coalNoise.SetFrequency(0.05f);
+
+  for (int x = 0; x < mapWidth; x++)
+  {
+    for (int y = terrainHeightValues[x] + 10; y < mapHeight; y++) // Starts 10 tiles underground
+    {
+      float noiseValue = coalNoise.GetNoise((float)x, (float)y);
+
+      if ((tileMap[x][y].type == stone || tileMap[x][y].type == dirt) && noiseValue > 0.8f)
+      {
+        PlaceTile(coal, x, y, tileMap);
       }
     }
   }

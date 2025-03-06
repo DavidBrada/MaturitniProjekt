@@ -3,13 +3,12 @@
 #include "AtlasTile.h"
 #include "WorldGrid.h"
 #include "InventoryCell.h"
-#include "TileSelector.h"
+//#include "CraftingCell.h"
 
 //If it's stupid but it works, it ain't stupid.
 class Inventory
 {
   sf::Vector2i mousePosWindow;
-  //AtlasTile* uiTextures;
 
 public:
   // Width and height in pixels
@@ -31,16 +30,20 @@ public:
   std::vector<std::vector<InventoryCell>> container;
   int storedItems[inventorySize];
 
+  //std::vector<CraftingCell> craftingMenu;
+  //int craftingCellCount;
+
   bool open = false;
   bool inInventory;
   sf::Vector2i mousePosInventory;
-  sf::Vector2f clickPosition;
+  sf::Vector2f selectedPosition;
 
   void Inicialize();
-  void Load(sf::View& view);
-  void Update(sf::View& view, WorldGrid& worldGrid, sf::RenderWindow& window);
+  void Load();
+  void Update(WorldGrid& worldGrid, sf::RenderWindow& window);
   void Render(sf::RenderWindow& window);
   void GetClickPos();
   void SetSprite(int type, float xPos, float yPos, sf::Texture& tileAtlasTexture, AtlasTile*& atlasTiles);
+  //void SetSprite(Item& item, int type, sf::Texture& tileAtlasTexture, AtlasTile*& atlasTiles);
 };
 

@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="LoadingScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -148,8 +149,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AtlasTile.h" />
+    <ClInclude Include="CraftingCell.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="InventoryCell.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Settings.h" />

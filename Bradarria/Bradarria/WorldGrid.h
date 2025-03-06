@@ -57,10 +57,12 @@ struct WorldGrid
 
   void GenerateStone();
   void GenerateIron();
+  void GenerateCoal();
   void GenerateTrees();
   void PlaceTree(int x, int yGround);
 
-  std::string blocks[8] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves"}; // Hardcoded block count, change later (I won't) 
+  std::string blocks[10] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves", "Workbench", "Coal"}; // Hardcoded block count, change later (I won't) 
+  //std::vector<Item> items;
 
   enum blockTypes
   {
@@ -71,6 +73,8 @@ struct WorldGrid
     stone,
     iron,
     treeTrunk,
-    leaves
+    leaves,
+    workbench,
+    coal
   };
 };

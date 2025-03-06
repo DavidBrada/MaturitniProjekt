@@ -21,14 +21,14 @@ void Inventory::Inicialize()
       container[x][y].isEmpty = true;
       container[x][y].quantity = 0;
 
-      storedItems[index] = -1; // -1 represents no item stored
+      storedItems[index] = 0; // 0 represents no item stored
 
       container[x][y].logicBody.setSize(sf::Vector2f(logicCellSize, logicCellSize));
     }
   }
 }
 
-void Inventory::Load(sf::View& view)
+void Inventory::Load()
 {
   for (int x = 0; x < xCellCount; x++)
   {
@@ -48,7 +48,7 @@ void Inventory::Load(sf::View& view)
   }
 }
 
-void Inventory::Update(sf::View& view, WorldGrid& worldGrid, sf::RenderWindow& window)
+void Inventory::Update(WorldGrid& worldGrid, sf::RenderWindow& window)
 {
   mousePosWindow = sf::Mouse::getPosition(window);
 
@@ -78,8 +78,39 @@ void Inventory::Update(sf::View& view, WorldGrid& worldGrid, sf::RenderWindow& w
     for (int y = 0; y < yCellCount; y++)
     {
       container[x][y].itemSprite.setPosition(container[x][y].renderBody.getPosition());
+      container[x][y].itemSprite.setScale(2, 2);
+
+      if (container[x][y].quantity == 0)
+      {
+        storedItems[container[x][y].id] = 0;
+        SetSprite(0, x, y, worldGrid.tileAtlasTexture, worldGrid.atlasTiles);
+      }
+
+      if (selectedPosition.x == x && selectedPosition.y == y)
+      {
+        container[selectedPosition.x][selectedPosition.y].renderBody.setOutlineColor(sf::Color::Yellow);
+        container[selectedPosition.x][selectedPosition.y].renderBody.setOutlineThickness(4);
+      }
+      else
+      {
+        container[x][y].renderBody.setOutlineThickness(2);
+        container[x][y].renderBody.setOutlineColor(sf::Color::White);
+      }
     }
   }
+  /*
+  for (int i = 0; i < craftingMenu.size(); i++)
+  {
+    CraftingCell cell;
+
+    cell.id = i;
+    SetSprite(worldGrid.items[i], 8, worldGrid.tileAtlasTexture, worldGrid.atlasTiles);
+    cell.renderBody.setPosition(sf::Vector2f(20.f, i * renderCellSize + 300.f));
+    cell.renderBody.setOutlineThickness(2);
+    cell.renderBody.setOutlineColor(sf::Color::White);
+
+    craftingMenu.push_back(cell);
+  }*/
 
   // Change the "inInventory" range based on the actual inventory size (when it's closed, only the hotbar is visible)
   if (open)
@@ -103,7 +134,7 @@ void Inventory::Update(sf::View& view, WorldGrid& worldGrid, sf::RenderWindow& w
 
 void Inventory::GetClickPos()
 {
-  clickPosition = sf::Vector2f(mousePosInventory.x, mousePosInventory.y);
+  selectedPosition = sf::Vector2f(mousePosInventory.x, mousePosInventory.y);
 }
 
 void Inventory::SetSprite(int type, float xPos, float yPos, sf::Texture& tileAtlasTexture, AtlasTile*& atlasTiles)
@@ -116,6 +147,17 @@ void Inventory::SetSprite(int type, float xPos, float yPos, sf::Texture& tileAtl
     16
   ));
 }
+/*
+void Inventory::SetSprite(Item& item, int type, sf::Texture& tileAtlasTexture, AtlasTile*& atlasTiles)
+{
+  item.sprite.setTexture(tileAtlasTexture);
+  item.sprite.setTextureRect(sf::IntRect(
+    atlasTiles[type].position.x,
+    atlasTiles[type].position.y,
+    16,
+    16
+  ));
+}*/
 
 void Inventory::Render(sf::RenderWindow& window)
 {
@@ -130,6 +172,11 @@ void Inventory::Render(sf::RenderWindow& window)
         window.draw(container[x][y].itemSprite);
       }
     }
+    /*
+    for (int i = 0; i < craftingMenu.size(); i++)
+    {
+      window.draw(craftingMenu[i].renderBody);
+    }*/
   }
   else
   {
