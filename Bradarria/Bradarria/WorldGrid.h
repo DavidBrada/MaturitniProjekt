@@ -61,8 +61,7 @@ struct WorldGrid
   void GenerateTrees();
   void PlaceTree(int x, int yGround);
 
-  std::string blocks[10] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves", "Workbench", "Coal"}; // Hardcoded block count, change later (I won't) 
-  //std::vector<Item> items;
+  std::string blocks[13] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves", "Workbench", "Coal", "Tree bottom", "Branch", "Branch trunk"}; // Hardcoded block count, change later (I won't) 
 
   enum blockTypes
   {
@@ -75,6 +74,9 @@ struct WorldGrid
     treeTrunk,
     leaves,
     workbench,
-    coal
+    coal,
+    treeBottom,
+    branch,
+    branchTrunk
   };
 };

@@ -32,15 +32,6 @@ void WorldGrid::Initialize()
   {
     std::cout << "Failed to load tilesheet." << std::endl;
   }
-
-  /*
-  Item workbench;
-
-  workbench.crafrable = false;
-  workbench.craftingRecepie.push_back({ 6, 5 });
-  inventory.SetSprite(workbench, blockTypes::workbench, tileAtlasTexture, atlasTiles);*/
-
-  //items.push_back(workbench);
 }
 
 void WorldGrid::Load()
@@ -133,14 +124,22 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
     worldMap[xPos][yPos].mineable = true;
     break;
   case leaves:
-    worldMap[xPos][yPos].hasCollision = true; 
+    worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
     break;
   case workbench:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
+    break;
   case coal:
     worldMap[xPos][yPos].hasCollision = true;
+    worldMap[xPos][yPos].mineable = true;
+    break;
+  case treeBottom:
+    worldMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].mineable = true;
+  case branchTrunk:
+    worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
   }
 
@@ -372,7 +371,7 @@ void WorldGrid::GenerateIron()
   for (int x = 0; x < mapWidth; x++)
   {
     for (int y = terrainHeightValues[x] + 20; y < mapHeight; y++) // Starts 20 tiles underground
-    { 
+    {
       float noiseValue = ironNoise.GetNoise((float)x, (float)y);
 
       if (tileMap[x][y].type == stone && noiseValue > 0.8f)
@@ -389,7 +388,7 @@ void WorldGrid::PlaceGrass()
   {
     for (int y = 0; y < mapHeight; y++)
     {
-      if (tileMap[x][terrainHeightValues[x]].type == dirt && 
+      if (tileMap[x][terrainHeightValues[x]].type == dirt &&
           tileMap[x][terrainHeightValues[x] - 1].type == air &&
           y >= terrainHeightValues[x])
       {
@@ -419,7 +418,14 @@ void WorldGrid::PlaceTree(int x, int yGround)
 
   for (int y = yGround; y > yGround - treeHeight; y--)
   {
-    PlaceTile(treeTrunk, x, y, tileMap);
+    if (y == yGround)
+    {
+      PlaceTile(treeBottom, x, y, tileMap);
+    }
+    else
+    {
+      PlaceTile(treeTrunk, x, y, tileMap);
+    }
   }
 
   // Leaf generation
@@ -428,10 +434,32 @@ void WorldGrid::PlaceTree(int x, int yGround)
   {
     for (int dy = -2; dy <= 1; dy++)
     {
-      if (rand() % 100 < 80)
+      if (rand() % 100 < 75)
       {
         PlaceTile(leaves, x + dx, leafStart + dy, tileMap);
       }
+    }
+  }
+
+  for (int y = yGround - 1; y > yGround - treeHeight + 2; y--)
+  {
+    if (rand() % 100 < 80)
+    {
+      if (rand() % 2 < 1){
+        // Flip the branch and trunk texture horizontally
+        tileMap[x - 1][y].sprite.setOrigin(tileSize, 0);
+        tileMap[x - 1][y].sprite.setScale(-1.f, 1.f);
+        PlaceTile(branch, x - 1, y, tileMap);
+
+        tileMap[x][y].sprite.setOrigin(tileSize, 0);
+        tileMap[x][y].sprite.setScale(-1.f, 1.f);
+      }
+      else
+      {
+        PlaceTile(branch, x + 1, y, tileMap);
+      }
+
+      PlaceTile(branchTrunk, x, y, tileMap);
     }
   }
 }

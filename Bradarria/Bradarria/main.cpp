@@ -48,7 +48,6 @@ int main()
   sf::Clock dtClock;
   sf::Clock uiClock; // updates UI
 
-
   // Mouse position relative to the screen; used for debugging
   sf::Vector2i mousePosScreen = sf::Mouse::getPosition();
   
@@ -206,7 +205,7 @@ int main()
         {
           tileSelector.timeToMine = 0.f;
 
-          if (tileSelector.mineClock.getElapsedTime().asSeconds() >= tileSelector.timeToMine)
+          if (tileSelector.mineClock.getElapsedTime().asSeconds() >= tileSelector.timeToMine && !inventory.inInventory)
           {
             tileSelector.minedType = worldGrid.tileMap[tileSelector.selectorPosition.x / worldGrid.tileSize][tileSelector.selectorPosition.y / worldGrid.tileSize].type;
 
@@ -218,6 +217,7 @@ int main()
             {
               worldGrid.PlaceTile(worldGrid.air, worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y, worldGrid.tileMap);
             }
+
 #pragma region StoreItem
             for (int i = 0; i < inventory.inventorySize; i++)
             {

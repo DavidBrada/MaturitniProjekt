@@ -3,7 +3,6 @@
 #include "AtlasTile.h"
 #include "WorldGrid.h"
 #include "InventoryCell.h"
-//#include "CraftingCell.h"
 
 //If it's stupid but it works, it ain't stupid.
 class Inventory
@@ -30,8 +29,7 @@ public:
   std::vector<std::vector<InventoryCell>> container;
   int storedItems[inventorySize];
 
-  //std::vector<CraftingCell> craftingMenu;
-  //int craftingCellCount;
+  int craftingCellCount;
 
   bool open = false;
   bool inInventory;
@@ -44,6 +42,5 @@ public:
   void Render(sf::RenderWindow& window);
   void GetClickPos();
   void SetSprite(int type, float xPos, float yPos, sf::Texture& tileAtlasTexture, AtlasTile*& atlasTiles);
-  //void SetSprite(Item& item, int type, sf::Texture& tileAtlasTexture, AtlasTile*& atlasTiles);
 };
 
