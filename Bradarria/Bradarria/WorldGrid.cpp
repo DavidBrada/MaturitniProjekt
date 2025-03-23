@@ -4,7 +4,6 @@ void WorldGrid::Load()
 {
   worldSeed = 287593;
 
-
   // World gen
   GenerateTerrain();
   InitializeCave();
