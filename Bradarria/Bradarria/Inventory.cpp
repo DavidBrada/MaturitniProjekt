@@ -1,6 +1,6 @@
 #include "Inventory.h"
 
-void Inventory::Inicialize()
+void Inventory::Initialize()
 {
   xLimit = 500;
   yLimit = 50;

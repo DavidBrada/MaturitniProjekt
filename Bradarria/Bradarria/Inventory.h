@@ -36,7 +36,7 @@ public:
   sf::Vector2i mousePosInventory;
   sf::Vector2f selectedPosition;
 
-  void Inicialize();
+  void Initialize();
   void Load();
   void Update(WorldGrid& worldGrid, sf::RenderWindow& window);
   void Render(sf::RenderWindow& window);

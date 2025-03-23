@@ -8,6 +8,17 @@ public:
   sf::Sprite sprite;
   sf::Texture loadingScreenTexture;
 
-  void Initialize();
-};
+  LoadingScreen()
+  {
+    if (loadingScreenTexture.loadFromFile("assets/textures/LoadingScreen.png"))
+    {
+      sprite.setTexture(loadingScreenTexture);
 
+      std::cout << "Successfully loaded loading screen" << std::endl;
+    }
+    else
+    {
+      std::cout << "Failed to load loading screen" << std::endl;
+    }
+  }
+};

@@ -23,7 +23,6 @@ struct WorldGrid
   int terrainHeightValues[mapWidth];
   int worldSeed;
   int seedOffset; // Seed gets offset by a random value for each block
-  bool worldLoaded; // This is probably not necessary
 
   sf::Texture tileAtlasTexture; // The whole tile atlas
   int xTileCount;
@@ -41,7 +40,6 @@ struct WorldGrid
 
   void PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<Tile>>& worldMap);
 
-  void Initialize();
   void Load();
   void Update(sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, sf::View& view);
@@ -61,7 +59,7 @@ struct WorldGrid
   void GenerateTrees();
   void PlaceTree(int x, int yGround);
 
-  std::string blocks[13] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves", "Workbench", "Coal", "Tree bottom", "Branch", "Branch trunk"}; // Hardcoded block count, change later (I won't) 
+  std::string blocks[14] = {"air", "dirt", "grass", "dirt background", "stone", "iron", "Tree trunk", "Leaves", "Workbench", "Coal", "Tree bottom", "Branch trunk", "Branch_1", "Branch_2"}; // Hardcoded block count, change later (I won't) 
 
   enum blockTypes
   {
@@ -76,7 +74,41 @@ struct WorldGrid
     workbench,
     coal,
     treeBottom,
-    branch,
-    branchTrunk
+    branchTrunk,
+    branch1,
+    branch2
   };
+
+  WorldGrid()
+  {
+    tileMap.resize(mapWidth, std::vector<Tile>());
+
+    if (tileAtlasTexture.loadFromFile("assets/textures/texture_test.png"))
+    {
+      xTileCount = tileAtlasTexture.getSize().x / tileSize;
+      yTileCount = tileAtlasTexture.getSize().y / tileSize;
+
+      std::cout << "Successfully loaded tile atlas." << std::endl;
+
+      tileCount = xTileCount * yTileCount;
+
+      atlasTiles = new AtlasTile[tileCount];
+
+      // Tile atlas loop
+      for (int x = 0; x < xTileCount; x++)
+      {
+        for (int y = 0; y < yTileCount; y++)
+        {
+          int index = x + y * xTileCount;
+
+          atlasTiles[index].id = index;
+          atlasTiles[index].position = sf::Vector2f(x * tileSize, y * tileSize);
+        }
+      }
+    }
+    else
+    {
+      std::cout << "Failed to load tilesheet." << std::endl;
+    }
+  }
 };

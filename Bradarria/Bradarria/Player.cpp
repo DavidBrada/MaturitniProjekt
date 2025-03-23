@@ -1,42 +1,5 @@
 #include "Player.h"
 
-void Player::Initialize(float xStartPos, float yStartPos)
-{
-  gravity = 300.f;
-  velocity = sf::Vector2f(0.f, 0.f);
-  body.setSize(sf::Vector2f(width, height));
-  body.setPosition(sf::Vector2f(xStartPos, yStartPos));
-  body.setFillColor(sf::Color::Red);
-
-  groundCheckRectLeft.setSize(sf::Vector2f(width / 8, width / 4));
-  groundCheckRectLeft.setFillColor(sf::Color::Blue);
-
-  groundCheckRectRight.setSize(sf::Vector2f(width / 8, width / 4));
-  groundCheckRectRight.setFillColor(sf::Color::Blue);
-
-  groundCheckRectCenter.setSize(sf::Vector2f(width / 8, width / 4));
-  groundCheckRectCenter.setFillColor(sf::Color::Blue);
-
-  jumpForce = defaultJumpForce;
-  xViewMoveCenterOffset = 100.f;
-  yViewMoveCenterOffset = 50.f;
-
-  if (texture.loadFromFile("assets/textures/player.png"))
-  {
-    sprite.setTexture(texture);
-    std::cout << "Successfully loaded player texture" << std::endl;
-  }
-  else
-  {
-    std::cout << "Failed to load player texture" << std::endl;
-  }
-}
-
-void Player::Load()
-{
-  // The only function without bugs
-}
-
 void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody)
 {
   sf::Vector2f rayOrigin = sf::Vector2f(body.getPosition().x + body.getSize().x / 2, body.getPosition().y + body.getSize().y / 2);

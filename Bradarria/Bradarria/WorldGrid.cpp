@@ -1,39 +1,5 @@
 ﻿#include "WorldGrid.h"
 
-void WorldGrid::Initialize()
-{
-  worldLoaded = false;
-  tileMap.resize(mapWidth, std::vector<Tile>());
-
-  if (tileAtlasTexture.loadFromFile("assets/textures/texture_test.png"))
-  {
-    xTileCount = tileAtlasTexture.getSize().x / tileSize;
-    yTileCount = tileAtlasTexture.getSize().y / tileSize;
-
-    std::cout << "Successfully loaded tile atlas." << std::endl;
-
-    tileCount = xTileCount * yTileCount;
-
-    atlasTiles = new AtlasTile[tileCount];
-
-    // Tile atlas loop
-    for (int x = 0; x < xTileCount; x++)
-    {
-      for (int y = 0; y < yTileCount; y++)
-      {
-        int index = x + y * xTileCount;
-
-        atlasTiles[index].id = index;
-        atlasTiles[index].position = sf::Vector2f(x * tileSize, y * tileSize);
-      }
-    }
-  }
-  else
-  {
-    std::cout << "Failed to load tilesheet." << std::endl;
-  }
-}
-
 void WorldGrid::Load()
 {
   worldSeed = 287593;
@@ -56,8 +22,6 @@ void WorldGrid::Load()
   GenerateCoal();
   PlaceGrass();
   GenerateTrees();
-
-  worldLoaded = true;
 }
 
 
@@ -141,6 +105,13 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
   case branchTrunk:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
+    break;
+    // This is like the OR logic operator
+  case branch1:
+  case branch2:
+    worldMap[xPos][yPos].hasCollision = false;
+    worldMap[xPos][yPos].mineable = true;
+
   }
 
   SetSprite(type, xPos, yPos, worldMap);
@@ -445,18 +416,36 @@ void WorldGrid::PlaceTree(int x, int yGround)
   {
     if (rand() % 100 < 80)
     {
+      int branchType;
+      branchType = rand() % 2;
+
       if (rand() % 2 < 1){
         // Flip the branch and trunk texture horizontally
         tileMap[x - 1][y].sprite.setOrigin(tileSize, 0);
         tileMap[x - 1][y].sprite.setScale(-1.f, 1.f);
-        PlaceTile(branch, x - 1, y, tileMap);
+
+        if (branchType == 1)
+        {
+          PlaceTile(branch1, x - 1, y, tileMap);
+        }
+        else
+        {
+          PlaceTile(branch2, x - 1, y, tileMap);
+        }
 
         tileMap[x][y].sprite.setOrigin(tileSize, 0);
         tileMap[x][y].sprite.setScale(-1.f, 1.f);
       }
       else
       {
-        PlaceTile(branch, x + 1, y, tileMap);
+        if (branchType == 1)
+        {
+          PlaceTile(branch1, x + 1, y, tileMap);
+        }
+        else
+        {
+          PlaceTile(branch2, x + 1, y, tileMap);
+        }
       }
 
       PlaceTile(branchTrunk, x, y, tileMap);

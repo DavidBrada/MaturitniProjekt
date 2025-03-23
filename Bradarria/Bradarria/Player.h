@@ -56,8 +56,6 @@ public:
   int cFromY = 0;
   int cToY = 0;
 
-  void Initialize(float xStartPos, float yStartPos);
-  void Load();
   void Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::RectangleShape& tileSelectorBody);
   void Jump();
   bool RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& t_hit_near);
@@ -65,4 +63,36 @@ public:
   bool IsGrounded(const sf::RectangleShape& in, const sf::RectangleShape& target, sf::Vector2f& contactPoint, sf::Vector2f& contactNormal, float& contactTime, float fElapsedTime);
   bool InArea(sf::RectangleShape& other, int maxDistance); // If a player can perform an action based on the distance from an object
   void Draw(sf::RenderWindow& window, WorldGrid& worldGrid);
+
+  Player(float xStartPos, float yStartPos)
+  {
+    gravity = 300.f;
+    velocity = sf::Vector2f(0.f, 0.f);
+    body.setSize(sf::Vector2f(width, height));
+    body.setPosition(sf::Vector2f(xStartPos, yStartPos));
+    body.setFillColor(sf::Color::Red);
+
+    groundCheckRectLeft.setSize(sf::Vector2f(width / 8, width / 4));
+    groundCheckRectLeft.setFillColor(sf::Color::Blue);
+
+    groundCheckRectRight.setSize(sf::Vector2f(width / 8, width / 4));
+    groundCheckRectRight.setFillColor(sf::Color::Blue);
+
+    groundCheckRectCenter.setSize(sf::Vector2f(width / 8, width / 4));
+    groundCheckRectCenter.setFillColor(sf::Color::Blue);
+
+    jumpForce = defaultJumpForce;
+    xViewMoveCenterOffset = 100.f;
+    yViewMoveCenterOffset = 50.f;
+
+    if (texture.loadFromFile("assets/textures/player.png"))
+    {
+      sprite.setTexture(texture);
+      std::cout << "Successfully loaded player texture" << std::endl;
+    }
+    else
+    {
+      std::cout << "Failed to load player texture" << std::endl;
+    }
+  }
 };
