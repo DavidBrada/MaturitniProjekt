@@ -2,7 +2,6 @@
 
 void WorldGrid::Load()
 {
-  worldSeed = 287593;
 
   // World gen
   GenerateTerrain();
@@ -211,7 +210,7 @@ void WorldGrid::GenerateTerrain()
       tileMap[x][y].shape.setPosition(x * tileSize, y * tileSize);
       tileMap[x][y].position = sf::Vector2f(x * tileSize, y * tileSize);
 
-      if (y == terrainHeightValues[x] && x == mapWidth / 2)
+      if (x == mapWidth / 2 && y == terrainHeightValues[x])
       {
         playerSpawnPos = sf::Vector2i(x * tileSize, (y - 5) * tileSize);
       }

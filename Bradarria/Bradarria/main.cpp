@@ -10,6 +10,7 @@
 #include "LoadingScreen.h"
 #include "Inventory.h"
 #include "MainMenu.h"
+#include "WorldSettings.h"
 #include "SceneManager.h"
 
 
@@ -29,6 +30,7 @@ int main()
 
   SceneManager sceneManager;
   MainMenu mainMenu(window);
+  WorldSettings worldSettings;
 
   WorldGrid* worldGrid = nullptr;
   Player* player = nullptr;
@@ -52,6 +54,15 @@ int main()
       window.display();
 
     }
+    else if (sceneManager.currentScene == sceneManager.worldSettingsMenu)
+    {
+      worldSettings.Update(window, sceneManager);
+
+      window.clear(sf::Color(135, 206, 235));
+      window.draw(worldSettings.bgSprite);
+      window.draw(worldSettings.playerText);
+      window.display();
+    }
     else if(sceneManager.currentScene == sceneManager.game)
     {
       if (!isLoaded)
@@ -64,6 +75,8 @@ int main()
         window.display();
 
         worldGrid = new WorldGrid();
+
+        worldGrid->worldSeed = std::stoi(worldSettings.playerInput.toAnsiString());
         std::thread loadingThread(generateWorld, std::ref(*worldGrid), worldGrid->mapWidth, worldGrid->mapHeight);
         loadingThread.join(); // Wait for thread to finish
 

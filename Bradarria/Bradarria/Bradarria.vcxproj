@@ -146,6 +146,7 @@
     <ClCompile Include="TileSelector.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="WorldGrid.cpp" />
+    <ClCompile Include="WorldSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AtlasTile.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="TileSelector.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="WorldGrid.h" />
+    <ClInclude Include="WorldSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data.json" />

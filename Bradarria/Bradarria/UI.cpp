@@ -45,7 +45,8 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
     << "View: " << worldGrid.mousePosView.x << ", " << worldGrid.mousePosView.y << std::endl
     << "Grid: " << worldGrid.mousePosGrid.x << ", " << worldGrid.mousePosGrid.y << std::endl 
     << "Block: " << worldGrid.blocks[hoveredTile.type] << std::endl
-    << "Collision: " << collisionStatus << std::endl;
+    << "Collision: " << collisionStatus << std::endl
+    << "World seed: " << worldGrid.worldSeed;
   gridInfoText.setString(ss.str());
   ss.str(std::string());
 

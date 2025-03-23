@@ -15,8 +15,13 @@ struct MainMenu
   sf::Texture bgTexture;
   sf::Sprite bgSprite;
 
-  sf::String playerInput;
-  sf::Text playerText;
+  sf::Font mainFont;
+  sf::Text playButtonText;
+
+  sf::FloatRect playButtonTextHitBox;
+
+  float transformStep;
+  sf::Clock animationClock;
 
   bool isActive;
   sf::Vector2f mousePos;
@@ -29,13 +34,26 @@ struct MainMenu
 
   MainMenu(sf::RenderWindow& window)
   {
+    transformStep = 0.06f;
     isActive = true;
+    mainFont.loadFromFile("assets/fonts/SegUIVar.ttf");
 
     float buttonCenterPos = (window.getPosition().x + window.getSize().x / 2) - buttonWidth / 2;
 
     playButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
     playButton.setPosition(sf::Vector2f(buttonCenterPos, 200.f));
     playButton.setFillColor(sf::Color::Yellow);
+
+    playButtonText.setCharacterSize(100);
+    playButtonText.setFont(mainFont);
+    playButtonText.setString("PLAY");
+    playButtonTextHitBox = playButtonText.getGlobalBounds();
+    playButtonText.setOrigin(sf::Vector2f(playButtonText.getPosition().x + playButtonTextHitBox.width / 2, playButtonText.getPosition().y + playButtonTextHitBox.height / 2));
+    playButtonText.setPosition(sf::Vector2f(playButton.getPosition().x + playButton.getSize().x / 2, playButton.getPosition().y + playButton.getSize().y / 4));
+    
+    playButtonText.setFillColor(sf::Color::Black);
+    playButtonText.setOutlineColor(sf::Color::White);
+
 
     exitButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
     exitButton.setPosition(sf::Vector2f(buttonCenterPos, 700.f));
