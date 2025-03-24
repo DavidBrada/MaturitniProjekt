@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CraftingMenu.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
@@ -151,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="AtlasTile.h" />
     <ClInclude Include="CraftingCell.h" />
+    <ClInclude Include="CraftingMenu.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="InventoryCell.h" />
     <ClInclude Include="Item.h" />
@@ -164,9 +166,6 @@
     <ClInclude Include="UI.h" />
     <ClInclude Include="WorldGrid.h" />
     <ClInclude Include="WorldSettings.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Data.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

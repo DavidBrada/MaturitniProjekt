@@ -1,7 +1,9 @@
 #pragma once
 #include "WorldGrid.h"
-
 #include "SFML/Graphics.hpp"
+
+class WorldGrid;
+
 struct TileSelector
 {
   sf::RectangleShape selectorBody;

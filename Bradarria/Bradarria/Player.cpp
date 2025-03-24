@@ -15,6 +15,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   {
     velocity.x = -moveSpeed;
     inputVelocity.x = -1;
+    state = walking;
 
     // Rotate sprite left
     sprite.setOrigin(width, 0);
@@ -24,6 +25,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   {
     velocity.x = moveSpeed;
     inputVelocity.x = 1;
+    state = walking;
 
     // Rotate sprite right
     sprite.setOrigin(0, 0);
@@ -33,6 +35,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   {
     velocity.x = 0.f;
     inputVelocity.x = 0.f;
+    state = idle;
   }
 
   // -------------------- ONLY FOR DEBUGGING DELETE LATER -----------------------
@@ -67,6 +70,37 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
       jumpForce = defaultJumpForce;
     }
   }
+  if (state == idle)
+  {
+    if (animClock.getElapsedTime().asSeconds() >= 0.3f)
+    {
+      if (currentAnimFrame == animFrameCount)
+      {
+        currentAnimFrame = 0;
+      }
+      sprite.setTextureRect(sf::IntRect(currentAnimFrame * width, 0, width, height));
+
+
+      currentAnimFrame++;
+      animClock.restart();
+    }
+  }
+  else if (state == walking)
+  {
+    if (animClock.getElapsedTime().asSeconds() >= 0.15f)
+    {
+      if (currentAnimFrame == animFrameCount)
+      {
+        currentAnimFrame = 0;
+      }
+      sprite.setTextureRect(sf::IntRect(currentAnimFrame * width, height, width, height));
+
+
+    currentAnimFrame++;
+    animClock.restart();
+    }
+  }
+  
 
   canPlace = false;
   tileSelectorBody.setOutlineColor(sf::Color::Red);
@@ -120,7 +154,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
     for (int y = yCanPlaceFrom; y < yCanPlaceTo; y++)
     {
       if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision &&
-          InArea(tileSelectorBody, 5 * worldGrid.tileSize))
+          InArea(tileSelectorBody, 10 * worldGrid.tileSize))
       {
         canPlace = true;
         tileSelectorBody.setOutlineColor(sf::Color::Yellow);
@@ -331,10 +365,6 @@ bool Player::RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, 
 
 void Player::Draw(sf::RenderWindow& window, WorldGrid& worldGrid)
 {
-  cFromX = body.getPosition().x / worldGrid.tileSize - 3;
-  cToX = body.getPosition().x / worldGrid.tileSize + 4;
-  cFromY = body.getPosition().y / worldGrid.tileSize - 2;
-  cToY = body.getPosition().y / worldGrid.tileSize + 5;
   
   //window.draw(body);
   window.draw(sprite);

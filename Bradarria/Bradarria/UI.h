@@ -4,6 +4,7 @@
 #include "TileSelector.h"
 #include "Player.h"
 #include "Inventory.h"
+#include "CraftingMenu.h"
 #include <sstream>
 
 class UI
@@ -21,7 +22,7 @@ public:
 
 public:
   void Initialize();
-  void Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory);
+  void Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory, CraftingMenu& craftingMenu);
   void UpdateInventory(Inventory& inventory, sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, Inventory& inventory);
 };

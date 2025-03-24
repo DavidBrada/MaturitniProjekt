@@ -3,13 +3,14 @@
 #include "AtlasTile.h"
 #include "WorldGrid.h"
 #include "InventoryCell.h"
+#include "TileSelector.h"
 
-//If it's stupid but it works, it ain't stupid.
-class Inventory
+class WorldGrid;
+
+struct Inventory
 {
   sf::Vector2i mousePosWindow;
 
-public:
   // Width and height in pixels
   int renderCellSize = 32; // Actually visible cells to make it look more terraria-like and more pretty
   int logicCellSize; // these cells react to mouse input and determine the position on the grid
@@ -29,8 +30,6 @@ public:
   std::vector<std::vector<InventoryCell>> container;
   int storedItems[inventorySize];
 
-  int craftingCellCount;
-
   bool open = false;
   bool inInventory;
   sf::Vector2i mousePosInventory;
@@ -42,5 +41,6 @@ public:
   void Render(sf::RenderWindow& window);
   void GetClickPos();
   void SetSprite(int type, float xPos, float yPos, sf::Texture& tileAtlasTexture, AtlasTile*& atlasTiles);
+  void StoreItem(int minedType, WorldGrid& worldGrid);
 };
 

@@ -12,6 +12,7 @@
 #include "MainMenu.h"
 #include "WorldSettings.h"
 #include "SceneManager.h"
+#include "CraftingMenu.h"
 
 
 void generateWorld(WorldGrid& worldGrid, int mapWidth, int mapHeight)
@@ -30,7 +31,7 @@ int main()
 
   SceneManager sceneManager;
   MainMenu mainMenu(window);
-  WorldSettings worldSettings;
+  WorldSettings worldSettings(window);
 
   WorldGrid* worldGrid = nullptr;
   Player* player = nullptr;
@@ -38,6 +39,7 @@ int main()
   UI* ui = nullptr;
   Inventory* inventory = nullptr;
   TileSelector* tileSelector = nullptr;
+  CraftingMenu* craftingMenu = nullptr;
   sf::Clock dtClock;
 
   float dt = 0.f;
@@ -59,8 +61,7 @@ int main()
       worldSettings.Update(window, sceneManager);
 
       window.clear(sf::Color(135, 206, 235));
-      window.draw(worldSettings.bgSprite);
-      window.draw(worldSettings.playerText);
+      worldSettings.Rneder(window);
       window.display();
     }
     else if(sceneManager.currentScene == sceneManager.game)
@@ -94,6 +95,11 @@ int main()
         view->setCenter(sf::Vector2f(player->body.getPosition().x + player->width / 2, player->body.getPosition().y + player->height / 2)); // Initializes player view on player position
 
         inventory->Load();
+
+        craftingMenu = new CraftingMenu();
+        craftingMenu->Load(worldGrid);
+
+        
         isLoaded = true;
       }
 
@@ -114,8 +120,12 @@ int main()
       player->Update(dt, *worldGrid, *view, tileSelector->selectorBody);
 
       // Update UI
-      ui->Update(*worldGrid, *tileSelector, *player, *inventory);
+      ui->Update(*worldGrid, *tileSelector, *player, *inventory, *craftingMenu);
       inventory->Update(*worldGrid, window);
+      craftingMenu->Update(worldGrid, inventory);
+#pragma region InputHandling
+
+
 
       sf::Event event;
       while (window.pollEvent(event))
@@ -207,6 +217,10 @@ int main()
                 tileSelector->selectedType = inventory->storedItems[inventory->container[inventory->selectedPosition.x][inventory->selectedPosition.y].id];
               }
             }
+            else if (craftingMenu->inCrafting)
+            {
+              craftingMenu->GetClickPos();
+            }
           }
           break;
 
@@ -214,9 +228,8 @@ int main()
           player->mining = false;
         }
       }
+#pragma endregion
 
-      // Mining and placing logic. This can't be put into a function. 
-      // It's throwing a syntax error or says that the function doesn't take 3 arguments when it has 3 arguments for some reason
       if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
       {
         if (tileSelector->selectedType != worldGrid->tileMap[tileSelector->selectorPosition.x / worldGrid->tileSize][tileSelector->selectorPosition.y / worldGrid->tileSize].type &&
@@ -226,131 +239,10 @@ int main()
           inventory->container[inventory->selectedPosition.x][inventory->selectedPosition.y].quantity--;
         }
         if (worldGrid->tileMap[tileSelector->selectorPosition.x / worldGrid->tileSize][tileSelector->selectorPosition.y / worldGrid->tileSize].mineable &&
-            tileSelector->selectedType == 0)
+            tileSelector->selectedType == 0 && !inventory->inInventory && !craftingMenu->inCrafting)
         {
-          player->mining = true;
-          if (settings.instaBreak)
-          {
-            tileSelector->timeToMine = 0.f;
-
-            if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine && !inventory->inInventory)
-            {
-              tileSelector->minedType = worldGrid->tileMap[tileSelector->selectorPosition.x / worldGrid->tileSize][tileSelector->selectorPosition.y / worldGrid->tileSize].type;
-
-              if (worldGrid->mousePosGrid.y > worldGrid->terrainHeightValues[worldGrid->mousePosGrid.x])
-              {
-                worldGrid->PlaceTile(worldGrid->dirtBackground, worldGrid->mousePosGrid.x, worldGrid->mousePosGrid.y, worldGrid->tileMap);
-              }
-              else
-              {
-                worldGrid->PlaceTile(worldGrid->air, worldGrid->mousePosGrid.x, worldGrid->mousePosGrid.y, worldGrid->tileMap);
-              }
-
-#pragma region StoreItem
-              for (int i = 0; i < inventory->inventorySize; i++)
-              {
-                if (inventory->storedItems[i] == tileSelector->minedType)
-                {
-                  for (int x = 0; x < inventory->xCellCount; x++)
-                  {
-                    for (int y = 0; y < inventory->yCellCount; y++)
-                    {
-                      if (inventory->container[x][y].id == i)
-                      {
-                        inventory->container[x][y].quantity++;
-                      }
-                    }
-                  }
-
-                  break;
-                }
-                else if (inventory->storedItems[i] == 0)
-                {
-                  inventory->storedItems[i] = tileSelector->minedType;
-
-                  for (int x = 0; x < inventory->xCellCount; x++)
-                  {
-                    for (int y = 0; y < inventory->yCellCount; y++)
-                    {
-                      if (inventory->container[x][y].id == i)
-                      {
-                        inventory->SetSprite(tileSelector->minedType, x, y, worldGrid->tileAtlasTexture, worldGrid->atlasTiles);
-                        inventory->container[x][y].quantity++;
-                      }
-                    }
-                  }
-                  break;
-                }
-              }
-            }
-
-
-#pragma endregion
-
-          }
-          else if (tileSelector->clickPosition.x == worldGrid->mousePosGrid.x &&
-                   tileSelector->clickPosition.y == worldGrid->mousePosGrid.y &&
-                   worldGrid->tileMap[tileSelector->selectorPosition.x / worldGrid->tileSize][tileSelector->selectorPosition.y / worldGrid->tileSize].mineable)
-          {
-            tileSelector->timeToMine = 0.5f;
-
-            if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine)
-            {
-              tileSelector->minedType = worldGrid->tileMap[tileSelector->selectorPosition.x / worldGrid->tileSize][tileSelector->selectorPosition.y / worldGrid->tileSize].type;
-
-              if (worldGrid->mousePosGrid.y > worldGrid->terrainHeightValues[worldGrid->mousePosGrid.x])
-              {
-                worldGrid->PlaceTile(worldGrid->dirtBackground, worldGrid->mousePosGrid.x, worldGrid->mousePosGrid.y, worldGrid->tileMap);
-              }
-              else
-              {
-                worldGrid->PlaceTile(worldGrid->air, worldGrid->mousePosGrid.x, worldGrid->mousePosGrid.y, worldGrid->tileMap);
-              }
-#pragma region StoreItem
-              for (int i = 0; i < inventory->inventorySize; i++)
-              {
-                if (inventory->storedItems[i] == tileSelector->minedType)
-                {
-                  for (int x = 0; x < inventory->xCellCount; x++)
-                  {
-                    for (int y = 0; y < inventory->yCellCount; y++)
-                    {
-                      if (inventory->container[x][y].id == i)
-                      {
-                        inventory->container[x][y].quantity++;
-                      }
-                    }
-                  }
-
-                  break;
-                }
-                else if (inventory->storedItems[i] == 0)
-                {
-                  inventory->storedItems[i] = tileSelector->minedType;
-
-                  for (int x = 0; x < inventory->xCellCount; x++)
-                  {
-                    for (int y = 0; y < inventory->yCellCount; y++)
-                    {
-                      if (inventory->container[x][y].id == i)
-                      {
-                        inventory->SetSprite(tileSelector->minedType, x, y, worldGrid->tileAtlasTexture, worldGrid->atlasTiles);
-                        inventory->container[x][y].quantity++;
-                      }
-                    }
-                  }
-                  break;
-                }
-              }
-            }
-          }
-          else
-          {
-            tileSelector->mineClock.restart();
-            tileSelector->clickPosition.x = worldGrid->mousePosGrid.x;
-            tileSelector->clickPosition.y = worldGrid->mousePosGrid.y;
-            player->mining = false;
-          }
+          tileSelector->minedType = worldGrid->MineTile(player, settings, tileSelector, inventory, craftingMenu);
+          inventory->StoreItem(tileSelector->minedType, *worldGrid);
         }
       }
 
@@ -368,6 +260,7 @@ int main()
       // Render UI
       window.setView(window.getDefaultView());
       inventory->Render(window);
+      craftingMenu->Render(window);
       ui->UpdateInventory(*inventory, window);
       ui->Render(window, *inventory);
 
@@ -384,6 +277,7 @@ int main()
   delete ui;
   delete inventory;
   delete tileSelector;
+  delete craftingMenu;
 
   return 0;
 }

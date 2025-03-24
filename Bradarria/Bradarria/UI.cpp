@@ -34,7 +34,7 @@ void UI::Initialize()
   inventoryText.setString(" NO TEXT ");
 }
 
-void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory)
+void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory, CraftingMenu& craftingMenu)
 {
   std::stringstream ss;
   Tile& hoveredTile = worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y];
@@ -75,6 +75,8 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
     << "Input vel X: " << player.inputVelocity.x << std::endl
     << "Click Pos: " << tileSelector.clickPosition.x << ", " << tileSelector.clickPosition.y << std::endl
     << "Last mined: " << worldGrid.blocks[tileSelector.minedType] << std::endl
+    << "In crafting: " << craftingMenu.inCrafting << std::endl
+    << "Crafting selected pos: " << craftingMenu.selectedPosition << std::endl
     << "In inventory: " << inventory.inInventory << std::endl
     << "Inventory pos: " << inventory.mousePosInventory.x << ", " << inventory.mousePosInventory.y << std::endl
     << "Inventory click pos: " << inventory.selectedPosition.x << ", " << inventory.selectedPosition.y << "; ID: " << inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].id << std::endl

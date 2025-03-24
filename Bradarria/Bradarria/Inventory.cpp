@@ -130,9 +130,47 @@ void Inventory::SetSprite(int type, float xPos, float yPos, sf::Texture& tileAtl
   container[xPos][yPos].itemSprite.setTextureRect(sf::IntRect(
     atlasTiles[type].position.x,
     atlasTiles[type].position.y,
-    16,
-    16
+    16, 16
   ));
+}
+
+void Inventory::StoreItem(int type, WorldGrid& worldGrid)
+{
+  for (int i = 0; i < inventorySize; i++)
+  {
+    if (storedItems[i] == type)
+    {
+      for (int x = 0; x < xCellCount; x++)
+      {
+        for (int y = 0; y < yCellCount; y++)
+        {
+          if (container[x][y].id == i)
+          {
+            container[x][y].quantity++;
+          }
+        }
+      }
+
+      break;
+    }
+    else if (storedItems[i] == 0)
+    {
+      storedItems[i] = type;
+
+      for (int x = 0; x < xCellCount; x++)
+      {
+        for (int y = 0; y < yCellCount; y++)
+        {
+          if (container[x][y].id == i)
+          {
+            SetSprite(type, x, y, worldGrid.tileAtlasTexture, worldGrid.atlasTiles);
+            container[x][y].quantity++;
+          }
+        }
+      }
+      break;
+    }
+  }
 }
 
 void Inventory::Render(sf::RenderWindow& window)

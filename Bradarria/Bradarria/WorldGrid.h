@@ -2,8 +2,18 @@
 #include <iostream>
 #include "SFML/Graphics.hpp"
 #include "Tile.h"
+#include "Player.h"
 #include "AtlasTile.h"
 #include "FastNoiseLite.h"
+#include "TileSelector.h"
+#include "Inventory.h"
+#include "CraftingMenu.h"
+
+class Player;
+class Inventory;
+class TileSelector;
+class Settings;
+class CraftingMenu;
 
 struct WorldGrid
 {
@@ -39,6 +49,7 @@ struct WorldGrid
   int toY = 0;
 
   void PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<Tile>>& worldMap);
+  int MineTile(Player* player, Settings& settings, TileSelector* tileSelector, Inventory* inventory, CraftingMenu* craftingMenu);
 
   void Load();
   void Update(sf::RenderWindow& window);

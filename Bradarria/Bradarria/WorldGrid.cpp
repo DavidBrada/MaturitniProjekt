@@ -238,6 +238,61 @@ void WorldGrid::GenerateTerrain()
   }
 }
 
+int WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileSelector, Inventory* inventory, CraftingMenu* craftingMenu)
+{
+  player->mining = true;
+  if (settings.instaBreak)
+  {
+    tileSelector->timeToMine = 0.f;
+
+    if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine && !inventory->inInventory && !craftingMenu->inCrafting)
+    {
+      int minedTileType = tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].type;
+
+      if (mousePosGrid.y > terrainHeightValues[mousePosGrid.x])
+      {
+        PlaceTile(dirtBackground, mousePosGrid.x, mousePosGrid.y, tileMap);
+      }
+      else
+      {
+        PlaceTile(air, mousePosGrid.x, mousePosGrid.y, tileMap);
+      }
+
+      return minedTileType;
+    }
+  }
+  else if (tileSelector->clickPosition.x == mousePosGrid.x &&
+           tileSelector->clickPosition.y == mousePosGrid.y &&
+           tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].mineable)
+  {
+    tileSelector->timeToMine = 0.5f;
+
+    if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine)
+    {
+
+      if (mousePosGrid.y > terrainHeightValues[mousePosGrid.x])
+      {
+        PlaceTile(dirtBackground, mousePosGrid.x, mousePosGrid.y, tileMap);
+      }
+      else
+      {
+      
+        PlaceTile(air, mousePosGrid.x, mousePosGrid.y, tileMap);
+      }
+
+      return tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].type;
+    }
+  }
+  else
+  {
+    tileSelector->mineClock.restart();
+    tileSelector->clickPosition.x = mousePosGrid.x;
+    tileSelector->clickPosition.y = mousePosGrid.y;
+    player->mining = false;
+  }
+  return 0;
+}
+
 // Fills the tiles randomly with air or dirt. This is then processed by the SmoothCave() function to generate caves
 void WorldGrid::InitializeCave()
 {

@@ -6,6 +6,8 @@
 #include "Settings.h"
 #include "Inventory.h"
 
+class WorldGrid;
+
 class Player
 {
 public:
@@ -17,6 +19,11 @@ public:
   float gravity = 0.f; // Initialized here to zero, because i had problems with the player falling through the map and now I don't wanna touch it cuz it would definitely break everyting
   bool colliding;
   bool bodyOutOfCamBounds; // set to true when the player goes a certain distance from the view center
+
+  int animFrameCount;
+  int currentAnimFrame;
+  sf::Clock animClock;
+  int state;
 
   // Jumping
   bool grounded;
@@ -64,6 +71,12 @@ public:
   bool InArea(sf::RectangleShape& other, int maxDistance); // If a player can perform an action based on the distance from an object
   void Draw(sf::RenderWindow& window, WorldGrid& worldGrid);
 
+  enum States
+  {
+    idle,
+    walking
+  };
+
   Player(float xStartPos, float yStartPos)
   {
     gravity = 300.f;
@@ -85,14 +98,16 @@ public:
     xViewMoveCenterOffset = 100.f;
     yViewMoveCenterOffset = 50.f;
 
-    if (texture.loadFromFile("assets/textures/player.png"))
+    if (texture.loadFromFile("assets/textures/PlayerAnimTest.png"))
     {
       sprite.setTexture(texture);
+      animFrameCount = texture.getSize().x / width;
       std::cout << "Successfully loaded player texture" << std::endl;
     }
     else
     {
       std::cout << "Failed to load player texture" << std::endl;
     }
+    sprite.setTextureRect(sf::IntRect(0, 0, width, height));
   }
 };

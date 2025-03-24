@@ -23,7 +23,6 @@ struct MainMenu
   float transformStep;
   sf::Clock animationClock;
 
-  bool isActive;
   sf::Vector2f mousePos;
 
   float buttonWidth = 500.f;
@@ -35,7 +34,6 @@ struct MainMenu
   MainMenu(sf::RenderWindow& window)
   {
     transformStep = 0.06f;
-    isActive = true;
     mainFont.loadFromFile("assets/fonts/SegUIVar.ttf");
 
     float buttonCenterPos = (window.getPosition().x + window.getSize().x / 2) - buttonWidth / 2;
