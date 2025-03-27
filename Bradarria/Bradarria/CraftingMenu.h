@@ -43,5 +43,7 @@ public:
     logicCellSize = renderCellSize + gap;
     craftingContainer.resize(cellCount);
   }
+
+  ~CraftingMenu();
 };
 

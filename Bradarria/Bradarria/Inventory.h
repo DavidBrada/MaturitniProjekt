@@ -42,5 +42,7 @@ struct Inventory
   void GetClickPos();
   void SetSprite(int type, float xPos, float yPos, sf::Texture& tileAtlasTexture, AtlasTile*& atlasTiles);
   void StoreItem(int minedType, WorldGrid& worldGrid);
+
+  ~Inventory();
 };
 

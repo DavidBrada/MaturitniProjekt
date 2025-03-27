@@ -18,4 +18,5 @@ struct TileSelector
   void Initialize(WorldGrid& worldGrid);
   void Update(WorldGrid& worldGrid);
   void GetClickPos(WorldGrid& worldGrid);
+  ~TileSelector();
 };

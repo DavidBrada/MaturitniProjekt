@@ -49,7 +49,7 @@ struct WorldGrid
   int toY = 0;
 
   void PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<Tile>>& worldMap);
-  int MineTile(Player* player, Settings& settings, TileSelector* tileSelector, Inventory* inventory, CraftingMenu* craftingMenu);
+  void MineTile(Player* player, Settings& settings, TileSelector* tileSelector, Inventory* inventory, CraftingMenu* craftingMenu);
 
   void Load();
   void Update(sf::RenderWindow& window);
@@ -122,4 +122,6 @@ struct WorldGrid
       std::cout << "Failed to load tilesheet." << std::endl;
     }
   }
+
+  ~WorldGrid();
 };

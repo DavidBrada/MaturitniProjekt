@@ -238,49 +238,91 @@ void WorldGrid::GenerateTerrain()
   }
 }
 
-int WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileSelector, Inventory* inventory, CraftingMenu* craftingMenu)
+void WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileSelector, Inventory* inventory, CraftingMenu* craftingMenu)
 {
   player->mining = true;
+
   if (settings.instaBreak)
   {
     tileSelector->timeToMine = 0.f;
 
-    if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine && !inventory->inInventory && !craftingMenu->inCrafting)
-    {
-      int minedTileType = tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].type;
-
-      if (mousePosGrid.y > terrainHeightValues[mousePosGrid.x])
-      {
-        PlaceTile(dirtBackground, mousePosGrid.x, mousePosGrid.y, tileMap);
-      }
-      else
-      {
-        PlaceTile(air, mousePosGrid.x, mousePosGrid.y, tileMap);
-      }
-
-      return minedTileType;
-    }
   }
-  else if (tileSelector->clickPosition.x == mousePosGrid.x &&
-           tileSelector->clickPosition.y == mousePosGrid.y &&
-           tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].mineable)
+  else
   {
     tileSelector->timeToMine = 0.5f;
+  }
 
-    if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine)
+  if (tileSelector->clickPosition.x == mousePosGrid.x &&
+      tileSelector->clickPosition.y == mousePosGrid.y &&
+      tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].mineable){
+
+    if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine && !inventory->inInventory && !craftingMenu->inCrafting)
     {
+      tileSelector->minedType = tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].type;
 
+      if (tileSelector->minedType == treeTrunk || tileSelector->minedType == treeBottom || tileSelector->minedType == branchTrunk)
+      {
+        bool isTreeTop = false;
+        for (int i = 0; i < 11; i++)
+        {
+          if (!isTreeTop)
+          {
+            if (tileMap[mousePosGrid.x][mousePosGrid.y - i].type == treeTrunk ||
+                tileMap[mousePosGrid.x][mousePosGrid.y - i].type == treeBottom)
+            {
+              PlaceTile(air, mousePosGrid.x, mousePosGrid.y - i, tileMap);
+            }
+            else if (tileMap[mousePosGrid.x][mousePosGrid.y - i].type == branchTrunk)
+            {
+              for (int j = -1; j < 2; j++)
+              {
+                if (tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == branch1 ||
+                    tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == branch2 ||
+                    tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == branchTrunk)
+                {
+                  PlaceTile(air, mousePosGrid.x + j, mousePosGrid.y - i, tileMap);
+                }
+              }
+            }
+            inventory->StoreItem(treeTrunk, *this); // CHANGE to a generic wood item
+
+            if (tileMap[mousePosGrid.x][mousePosGrid.y - i].type == leaves)
+            {
+              isTreeTop = true;
+              for (int j = -2; j < 3; j++)
+              {
+                if (tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == leaves)
+                {
+                  PlaceTile(air, mousePosGrid.x + j, mousePosGrid.y - i, tileMap);
+                }
+              }
+            }
+          }
+          else
+          {
+            for (int j = -2; j < 3; j++)
+            {
+              if (tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == leaves)
+              {
+                PlaceTile(air, mousePosGrid.x + j, mousePosGrid.y - i, tileMap);
+              }
+            }
+          }
+        }
+      }
+      else
+      {
+        inventory->StoreItem(tileSelector->minedType, *this);
+      }
+      
       if (mousePosGrid.y > terrainHeightValues[mousePosGrid.x])
       {
         PlaceTile(dirtBackground, mousePosGrid.x, mousePosGrid.y, tileMap);
       }
       else
       {
-      
         PlaceTile(air, mousePosGrid.x, mousePosGrid.y, tileMap);
       }
-
-      return tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].type;
     }
   }
   else
@@ -290,7 +332,6 @@ int WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileSe
     tileSelector->clickPosition.y = mousePosGrid.y;
     player->mining = false;
   }
-  return 0;
 }
 
 // Fills the tiles randomly with air or dirt. This is then processed by the SmoothCave() function to generate caves
@@ -438,7 +479,7 @@ void WorldGrid::GenerateTrees()
 
 void WorldGrid::PlaceTree(int x, int yGround)
 {
-  int treeHeight = rand() % 6 + 6; // Height of a tree excluding leaves
+  int treeHeight = rand() % 6 + 6; // Height of a tree excluding leaves min: 6, max: 11
 
   for (int y = yGround; y > yGround - treeHeight; y--)
   {
@@ -527,6 +568,10 @@ void WorldGrid::GenerateCoal()
       }
     }
   }
+}
+
+WorldGrid::~WorldGrid()
+{
 }
 
 void WorldGrid::FillTiles()

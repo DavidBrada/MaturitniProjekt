@@ -373,6 +373,11 @@ void Player::Draw(sf::RenderWindow& window, WorldGrid& worldGrid)
   window.draw(groundCheckRectLeft);
   window.draw(groundCheckRectRight);
   window.draw(groundCheckRectCenter);
-  window.draw(contactNormalLine, 2, sf::Lines);
+  //window.draw(contactNormalLine, 2, sf::Lines);
   */
+}
+
+Player::~Player()
+{
+
 }

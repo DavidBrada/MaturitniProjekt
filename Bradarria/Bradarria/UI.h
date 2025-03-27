@@ -17,7 +17,7 @@ class UI
   sf::Text inventoryText;
 
 public:
-  bool visible = true;
+  bool visible = false;
   float timeStep = 0.1f; // Time step of UI in seconds, it's probably useless tho
 
 public:
@@ -25,5 +25,7 @@ public:
   void Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory, CraftingMenu& craftingMenu);
   void UpdateInventory(Inventory& inventory, sf::RenderWindow& window);
   void Render(sf::RenderWindow& window, Inventory& inventory);
+
+  ~UI();
 };
 

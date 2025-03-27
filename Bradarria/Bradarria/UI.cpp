@@ -136,3 +136,7 @@ void UI::Render(sf::RenderWindow& window, Inventory& inventory)
   }
   window.draw(uiText);
 }
+
+UI::~UI()
+{
+}

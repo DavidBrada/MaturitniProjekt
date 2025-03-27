@@ -116,3 +116,7 @@ void CraftingMenu::Render(sf::RenderWindow& window)
     window.draw(craftingContainer[i].itemSprite);
   }
 }
+
+CraftingMenu::~CraftingMenu()
+{
+}

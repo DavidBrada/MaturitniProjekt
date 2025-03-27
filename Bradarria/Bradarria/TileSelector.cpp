@@ -19,3 +19,7 @@ void TileSelector::GetClickPos(WorldGrid& worldGrid)
 {
   clickPosition = sf::Vector2f(worldGrid.mousePosGrid.x, worldGrid.mousePosGrid.y);
 }
+
+TileSelector::~TileSelector()
+{
+}

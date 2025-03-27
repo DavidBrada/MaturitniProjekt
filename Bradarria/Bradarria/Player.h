@@ -83,7 +83,9 @@ public:
     velocity = sf::Vector2f(0.f, 0.f);
     body.setSize(sf::Vector2f(width, height));
     body.setPosition(sf::Vector2f(xStartPos, yStartPos));
-    body.setFillColor(sf::Color::Red);
+    body.setFillColor(sf::Color::Transparent);
+    body.setOutlineColor(sf::Color::Green);
+    body.setOutlineThickness(2);
 
     groundCheckRectLeft.setSize(sf::Vector2f(width / 8, width / 4));
     groundCheckRectLeft.setFillColor(sf::Color::Blue);
@@ -108,6 +110,8 @@ public:
     {
       std::cout << "Failed to load player texture" << std::endl;
     }
-    sprite.setTextureRect(sf::IntRect(0, 0, width, height));
+    sprite.setTextureRect(sf::IntRect(0, 0, width, height)); // Start the animation on the first frame
   }
+
+  ~Player();
 };

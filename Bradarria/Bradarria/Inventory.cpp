@@ -173,6 +173,10 @@ void Inventory::StoreItem(int type, WorldGrid& worldGrid)
   }
 }
 
+Inventory::~Inventory()
+{
+}
+
 void Inventory::Render(sf::RenderWindow& window)
 {
   if (open)
@@ -182,7 +186,7 @@ void Inventory::Render(sf::RenderWindow& window)
       for (int y = 0; y < yCellCount; y++)
       {
         window.draw(container[x][y].renderBody);
-        window.draw(container[x][y].logicBody);
+        //window.draw(container[x][y].logicBody);
         window.draw(container[x][y].itemSprite);
       }
     }
@@ -193,7 +197,7 @@ void Inventory::Render(sf::RenderWindow& window)
     {
       int y = 0;
       window.draw(container[x][y].renderBody);
-      window.draw(container[x][y].logicBody);
+      //window.draw(container[x][y].logicBody);
       window.draw(container[x][y].itemSprite);
     }
   }

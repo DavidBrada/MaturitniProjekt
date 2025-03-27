@@ -25,7 +25,7 @@ int main()
   Settings settings;
   settings.Load();
 
-  sf::RenderWindow window(sf::VideoMode(settings.windowWidth, settings.windowHeight), "Bradarria", sf::Style::Fullscreen);
+  sf::RenderWindow window(sf::VideoMode(settings.windowWidth, settings.windowHeight), "Bradarria", sf::Style::Default);
   window.setFramerateLimit(settings.fpsLimit);
   window.setKeyRepeatEnabled(false);
 
@@ -44,11 +44,13 @@ int main()
 
   float dt = 0.f;
   bool isLoaded = false;
+  bool exitGame = false;
 
   while (window.isOpen())
   {
     if (sceneManager.currentScene == sceneManager.mainMenu)
     {
+
       mainMenu.Update(window, sceneManager);
 
       window.clear(sf::Color(135, 206, 235));
@@ -156,7 +158,8 @@ int main()
           else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
           {
             // ADD - Delete game objects here and display main menu
-            window.close();
+            exitGame = true;
+            sceneManager.currentScene = sceneManager.mainMenu;
           }
           else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
           {
@@ -238,11 +241,11 @@ int main()
           worldGrid->PlaceTile(tileSelector->selectedType, worldGrid->mousePosGrid.x, worldGrid->mousePosGrid.y, worldGrid->tileMap);
           inventory->container[inventory->selectedPosition.x][inventory->selectedPosition.y].quantity--;
         }
+
         if (worldGrid->tileMap[tileSelector->selectorPosition.x / worldGrid->tileSize][tileSelector->selectorPosition.y / worldGrid->tileSize].mineable &&
             tileSelector->selectedType == 0 && !inventory->inInventory && !craftingMenu->inCrafting)
         {
-          tileSelector->minedType = worldGrid->MineTile(player, settings, tileSelector, inventory, craftingMenu);
-          inventory->StoreItem(tileSelector->minedType, *worldGrid);
+          worldGrid->MineTile(player, settings, tileSelector, inventory, craftingMenu);
         }
       }
 
@@ -267,17 +270,21 @@ int main()
       window.display();
     
 #pragma endregion
+
+      if (exitGame)
+      {
+        exitGame = false;
+        player->~Player();
+        worldGrid->~WorldGrid();
+        view->~View();
+        ui->~UI();
+        inventory->~Inventory();
+        tileSelector->~TileSelector();
+        craftingMenu->~CraftingMenu();
+        isLoaded = false;
+      }
     }
   }
-  
-
-  delete player;
-  delete worldGrid;
-  delete view;
-  delete ui;
-  delete inventory;
-  delete tileSelector;
-  delete craftingMenu;
 
   return 0;
 }
