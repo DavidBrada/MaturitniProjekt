@@ -9,4 +9,5 @@ struct Tile
   sf::Vector2f position;
   bool hasCollision;
   bool mineable;
+  float timeToMine;
 };

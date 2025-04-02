@@ -8,7 +8,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   sf::Vector2f contactPoint, contactNormal;
   float time;
 
-  std::vector<std::pair<sf::Vector2i, float>> z;
+  std::vector<std::pair<sf::Vector2i, float>> z; // This is for sorting collision blocks 
 
 #pragma region getInput
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -36,24 +36,6 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
     velocity.x = 0.f;
     inputVelocity.x = 0.f;
     state = idle;
-  }
-
-  // -------------------- ONLY FOR DEBUGGING DELETE LATER -----------------------
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-  {
-    view.move(-moveSpeed * deltaTime * 2, 0.f);
-  }
-  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-  {
-    view.move(moveSpeed * deltaTime * 2, 0.f);
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-  {
-    view.move(0.f, -moveSpeed * deltaTime * 2);
-  }
-  else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-  {
-    view.move(0.f, moveSpeed * deltaTime * 2);
   }
 #pragma endregion
 
@@ -111,7 +93,6 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   yCanPlaceTo = worldGrid.mousePosGrid.y + 2;
 
 #pragma region mapEdgeConditions
-  // if if if if if if if
   if (xCanPlaceFrom < 0)
   {
     xCanPlaceFrom = 0;
@@ -153,8 +134,9 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
   {
     for (int y = yCanPlaceFrom; y < yCanPlaceTo; y++)
     {
-      if (worldGrid.tileMap[x][y].hasCollision && !worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].hasCollision &&
-          InArea(tileSelectorBody, 10 * worldGrid.tileSize))
+      if (worldGrid.tileMap[x][y].hasCollision && (worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].type == worldGrid.air ||
+          worldGrid.tileMap[worldGrid.mousePosGrid.x][worldGrid.mousePosGrid.y].type == worldGrid.dirtBackground) &&
+          InArea(tileSelectorBody, 10 * worldGrid.tileSize) && !InArea(tileSelectorBody, 2 * worldGrid.tileSize))
       {
         canPlace = true;
         tileSelectorBody.setOutlineColor(sf::Color::Yellow);
@@ -218,7 +200,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
     }
   }
 
-  // Sort the tiles in the vector by the calculated contact time (closest tiles to the player are first)
+  // Sort the tiles in the vector by the calculated distance (closest tiles to the player are first)
   std::sort(z.begin(), z.end(), [](const std::pair<sf::Vector2i, float>& a, const std::pair<sf::Vector2i, float>& b)
   {
     return a.second < b.second;
@@ -231,10 +213,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
     {
       velocity += sf::Vector2f(contactNormal.x * std::abs(velocity.x), contactNormal.y * std::abs(velocity.y)) * (1 - time);
 
-      contactNormalLine[0].position = contactPoint;
-      contactNormalLine[0].color = sf::Color::Blue;
-      contactNormalLine[1].position = contactPoint + sf::Vector2f(contactNormal.x * 20, contactNormal.y * 20);
-      contactNormalLine[1].color = sf::Color::Blue;
+
     }
   }
 
@@ -260,7 +239,8 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
     view.move(0.f, -moveSpeed * deltaTime);
   }
 
-  velocity *= deltaTime;
+  velocity.x *= deltaTime;
+  velocity.y *= deltaTime;
   body.move(velocity);
   sprite.setPosition(body.getPosition());
   groundCheckRectLeft.setPosition(sf::Vector2f(body.getPosition().x, body.getPosition().y + height));
@@ -288,7 +268,9 @@ bool Player::IsGrounded(const sf::RectangleShape& cBody, const sf::RectangleShap
 
 bool Player::InArea(sf::RectangleShape& other, int maxDistance)
 {
-  return abs(body.getPosition().x - other.getPosition().x) < maxDistance && abs(body.getPosition().y - other.getPosition().y) < maxDistance;
+  sf::Vector2f bodyCenterPos = sf::Vector2f(body.getPosition().x + body.getSize().x / 2, body.getPosition().y + body.getSize().y / 2);
+  sf::Vector2f otherCenterPos = sf::Vector2f(other.getPosition().x + other.getSize().x / 2, other.getPosition().y + other.getSize().y / 2);
+  return abs(bodyCenterPos.x - otherCenterPos.x) < maxDistance && abs(bodyCenterPos.y - otherCenterPos.y) < maxDistance;
 }
 
 // cBody is a moving rectangle, target is a static rectangle, that is being checked for collisions
@@ -365,7 +347,8 @@ bool Player::RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, 
 
 void Player::Draw(sf::RenderWindow& window, WorldGrid& worldGrid)
 {
-  
+  // Uncomment commented code to see player collider and the groundCheck colliders
+
   //window.draw(body);
   window.draw(sprite);
   

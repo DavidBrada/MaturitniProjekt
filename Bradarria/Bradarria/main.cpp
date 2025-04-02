@@ -23,9 +23,8 @@ void generateWorld(WorldGrid& worldGrid, int mapWidth, int mapHeight)
 int main()
 {
   Settings settings;
-  settings.Load();
 
-  sf::RenderWindow window(sf::VideoMode(settings.windowWidth, settings.windowHeight), "Bradarria", sf::Style::Default);
+  sf::RenderWindow window(sf::VideoMode(settings.windowWidth, settings.windowHeight), "Bradarria", sf::Style::Fullscreen);
   window.setFramerateLimit(settings.fpsLimit);
   window.setKeyRepeatEnabled(false);
 
@@ -50,7 +49,6 @@ int main()
   {
     if (sceneManager.currentScene == sceneManager.mainMenu)
     {
-
       mainMenu.Update(window, sceneManager);
 
       window.clear(sf::Color(135, 206, 235));
@@ -124,10 +122,8 @@ int main()
       // Update UI
       ui->Update(*worldGrid, *tileSelector, *player, *inventory, *craftingMenu);
       inventory->Update(*worldGrid, window);
-      craftingMenu->Update(worldGrid, inventory);
+      craftingMenu->Update(worldGrid, inventory, window);
 #pragma region InputHandling
-
-
 
       sf::Event event;
       while (window.pollEvent(event))
@@ -157,7 +153,6 @@ int main()
           }
           else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
           {
-            // ADD - Delete game objects here and display main menu
             exitGame = true;
             sceneManager.currentScene = sceneManager.mainMenu;
           }
@@ -201,6 +196,10 @@ int main()
           else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9))
           {
             inventory->selectedPosition = sf::Vector2f(8, 0);
+          }
+          else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
+          {
+            inventory->selectedPosition = sf::Vector2f(9, 0);
           }
 
           tileSelector->selectedType = inventory->storedItems[inventory->container[inventory->selectedPosition.x][inventory->selectedPosition.y].id];
@@ -257,7 +256,10 @@ int main()
       window.setView(*view);
 
       worldGrid->Render(window, *view);
-      window.draw(tileSelector->selectorBody);
+      if (ui->visible)
+      {
+        window.draw(tileSelector->selectorBody);
+      }
       player->Draw(window, *worldGrid);
 
       // Render UI

@@ -12,4 +12,5 @@ public:
 
   bool isEmpty;
   int quantity; // How much of one block is stored in this cell
+  int itemID;
 };

@@ -1,4 +1,6 @@
 #pragma once
+#include <SFML/Graphics.hpp>
+
 struct Settings
 {
   bool instaBreak; // Toggles if blocks should be mined instantly or not
@@ -6,6 +8,13 @@ struct Settings
   int windowWidth = 1920;
   int windowHeight = 1080;
 
-  void Load();
+  Settings()
+  {
+    instaBreak = false;
+    fpsLimit = 60;
+
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 8;
+  }
 };
 

@@ -20,6 +20,8 @@ public:
   sf::Text startButtonText;
   sf::FloatRect startButtonTextHitBox;
 
+  sf::RectangleShape mainBody;
+
   float buttonWidth = 500.f;
   float buttonHeight = 100.f;
 
@@ -53,6 +55,10 @@ public:
     }
 
     float buttonCenterPos = (window.getPosition().x + window.getSize().x / 2) - buttonWidth / 2;
+
+    mainBody.setPosition(sf::Vector2f(460.f, 190.f));
+    mainBody.setSize(sf::Vector2f(1000.f, 700.f));
+    mainBody.setFillColor(sf::Color(0, 0, 150, 200));
 
     startButton.setSize(sf::Vector2f(buttonWidth, buttonHeight));
     startButton.setPosition(sf::Vector2f(buttonCenterPos, 700.f));

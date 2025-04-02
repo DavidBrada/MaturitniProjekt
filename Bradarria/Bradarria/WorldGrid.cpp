@@ -59,11 +59,13 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
   case dirt:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 0.5f;
     break;
     
   case grass:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 0.6f;
     break;
 
   case dirtBackground:
@@ -74,46 +76,73 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
   case stone:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 1.0f;
     break;
 
   case iron:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 3.0f;
     break;
 
   case treeTrunk:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 0.8f;
     break;
   case leaves:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 0.4f;
     break;
   case workbench:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 0.8f;
     break;
   case coal:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 2.0f;
     break;
   case treeBottom:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 1.5f;
+    break;
   case branchTrunk:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 1.2f;
     break;
     // This is like the OR logic operator
   case branch1:
   case branch2:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
-
+    worldMap[xPos][yPos].timeToMine = 0.7f;
+    break;
+  case treeLog:
+    worldMap[xPos][yPos].timeToMine = 1.2f;
+    break;
+  case woodenPlank:
+    worldMap[xPos][yPos].hasCollision = true;
+    worldMap[xPos][yPos].mineable = true;
+    worldMap[xPos][yPos].timeToMine = 0.8f;
+    break;
   }
-
-  SetSprite(type, xPos, yPos, worldMap);
-  worldMap[xPos][yPos].type = type;
+  if (type == treeLog)
+  {
+    SetSprite(woodenPlank, xPos, yPos, worldMap);
+    worldMap[xPos][yPos].type = woodenPlank;
+    worldMap[xPos][yPos].hasCollision = true;
+    worldMap[xPos][yPos].mineable = true;
+  }
+  else
+  {
+    SetSprite(type, xPos, yPos, worldMap);
+    worldMap[xPos][yPos].type = type;
+  }
 }
 
 void WorldGrid::Render(sf::RenderWindow& window, sf::View& view)
@@ -249,22 +278,28 @@ void WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileS
   }
   else
   {
-    tileSelector->timeToMine = 0.5f;
+    tileSelector->timeToMine = tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].timeToMine;
   }
 
   if (tileSelector->clickPosition.x == mousePosGrid.x &&
       tileSelector->clickPosition.y == mousePosGrid.y &&
       tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].mineable){
 
-    if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine && !inventory->inInventory && !craftingMenu->inCrafting)
+    if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine && !inventory->inInventory && (!craftingMenu->inCrafting || !craftingMenu->isAccessible))
     {
       tileSelector->minedType = tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].type;
 
+      // This handles tree destruction logic
       if (tileSelector->minedType == treeTrunk || tileSelector->minedType == treeBottom || tileSelector->minedType == branchTrunk)
       {
         bool isTreeTop = false;
-        for (int i = 0; i < 11; i++)
+        for (int i = 0; i < 15; i++)
         {
+          if (tileMap[mousePosGrid.x][mousePosGrid.y - i].type == air ||
+              tileMap[mousePosGrid.x][mousePosGrid.y - i].type == leaves)
+          {
+            isTreeTop = true;
+          }
           if (!isTreeTop)
           {
             if (tileMap[mousePosGrid.x][mousePosGrid.y - i].type == treeTrunk ||
@@ -284,7 +319,7 @@ void WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileS
                 }
               }
             }
-            inventory->StoreItem(treeTrunk, *this); // CHANGE to a generic wood item
+            inventory->StoreItem(treeLog, *this);
 
             if (tileMap[mousePosGrid.x][mousePosGrid.y - i].type == leaves)
             {
@@ -310,10 +345,15 @@ void WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileS
           }
         }
       }
+      else if (tileSelector->minedType == branch1 || tileSelector->minedType == branch2)
+      {
+        inventory->StoreItem(treeLog, *this);
+      }
       else
       {
         inventory->StoreItem(tileSelector->minedType, *this);
       }
+
       
       if (mousePosGrid.y > terrainHeightValues[mousePosGrid.x])
       {

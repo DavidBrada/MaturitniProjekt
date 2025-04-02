@@ -139,11 +139,9 @@
   <ItemGroup>
     <ClCompile Include="CraftingMenu.cpp" />
     <ClCompile Include="Inventory.cpp" />
-    <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="TileSelector.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="WorldGrid.cpp" />
@@ -155,7 +153,6 @@
     <ClInclude Include="CraftingMenu.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="InventoryCell.h" />
-    <ClInclude Include="Item.h" />
     <ClInclude Include="LoadingScreen.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Player.h" />

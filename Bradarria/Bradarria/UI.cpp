@@ -79,6 +79,7 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
     << "Crafting selected pos: " << craftingMenu.selectedPosition << std::endl
     << "In inventory: " << inventory.inInventory << std::endl
     << "Inventory pos: " << inventory.mousePosInventory.x << ", " << inventory.mousePosInventory.y << std::endl
+    << "Selected item ID: " << inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].itemID << std::endl
     << "Inventory click pos: " << inventory.selectedPosition.x << ", " << inventory.selectedPosition.y << "; ID: " << inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].id << std::endl
     << "Mining: " << player.mining << std::endl;
 
@@ -133,8 +134,8 @@ void UI::Render(sf::RenderWindow& window, Inventory& inventory)
     window.draw(gridInfoText);
     window.draw(playerInfoText);
     window.draw(controlsText);
+    window.draw(uiText);
   }
-  window.draw(uiText);
 }
 
 UI::~UI()

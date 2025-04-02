@@ -74,6 +74,7 @@ void WorldSettings::Update(sf::RenderWindow& window, SceneManager& sceneManager)
 void WorldSettings::Rneder(sf::RenderWindow& window)
 {
   window.draw(bgSprite);
+  window.draw(mainBody);
   window.draw(playerText);
   //window.draw(startButton);
   window.draw(startButtonText);

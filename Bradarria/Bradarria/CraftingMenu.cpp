@@ -1,16 +1,5 @@
 #include "CraftingMenu.h"
 
-void CraftingMenu::AddItem(int itemID, WorldGrid*& worldGrid)
-{
-  for (int i = 0; i < cellCount; i++)
-  {
-    if (craftingContainer[i].craftItemID == 0)
-    {
-      SetSprite(itemID, i, worldGrid->tileAtlasTexture, worldGrid->atlasTiles);
-    }
-  }
-}
-
 void CraftingMenu::Load(WorldGrid*& worldGrid)
 {
   for (int i = 0; i < cellCount; i++)
@@ -24,11 +13,11 @@ void CraftingMenu::Load(WorldGrid*& worldGrid)
   for (int i = 0; i < cellCount; i++)
   {
     craftingContainer[i].renderBody.setPosition(sf::Vector2f(margin + gap, i * (renderCellSize + gap) + marginTop));
-    craftingContainer[i].renderBody.setFillColor(sf::Color::Yellow);
+    craftingContainer[i].renderBody.setFillColor(sf::Color(70, 70, 200, 150));
     craftingContainer[i].renderBody.setOutlineThickness(2);
-    craftingContainer[i].renderBody.setOutlineColor(sf::Color::Black);
+    craftingContainer[i].renderBody.setOutlineColor(sf::Color::White);
 
-    craftingContainer[i].logicBody.setPosition(sf::Vector2f(margin + gap / 2, i * renderCellSize - gap / 2 + marginTop));
+    craftingContainer[i].logicBody.setPosition(sf::Vector2f(margin + gap / 2, i * logicCellSize - gap / 2 + marginTop));
     craftingContainer[i].logicBody.setFillColor(sf::Color::Transparent);
     craftingContainer[i].logicBody.setOutlineThickness(2);
     craftingContainer[i].logicBody.setOutlineColor(sf::Color::Green);
@@ -38,57 +27,96 @@ void CraftingMenu::Load(WorldGrid*& worldGrid)
     craftingContainer[i].logicRect.height = logicCellSize;
     craftingContainer[i].logicRect.width = logicCellSize;
 
-
-    AddItem(craftableTypes[i], worldGrid);
+    SetSprite(craftableTypes[i], i, worldGrid->tileAtlasTexture, worldGrid->atlasTiles);
   }
 }
 
-void CraftingMenu::Update(WorldGrid*& worldGrid, Inventory*& inventory)
+void CraftingMenu::Update(WorldGrid*& worldGrid, Inventory*& inventory, sf::RenderWindow& window)
 {
+  // This whole thing was put together last-minute
+  workbenchCrafrable = false;
+  woodenPlankCrafrable = false;
+
+  for (int x = 0; x < inventory->xCellCount; x++)
+  {
+    for (int y = 0; y < inventory->yCellCount; y++)
+    {
+      if (inventory->container[x][y].itemID == worldGrid->treeLog && inventory->container[x][y].quantity > 0)
+      {
+        woodenPlankCrafrable = true;
+
+        if (inventory->container[x][y].quantity >= 5)
+        {
+          workbenchCrafrable = true;
+        }
+        break;
+      }
+    }
+  }
+
+  isAccessible = inventory->open;
+
   if (inCrafting)
   {
 
-    if (inventory->mousePosWindow.y >= 0.f)
-    {
-      mousePosCrafting = (inventory->mousePosWindow.y + gap / 2 - marginTop) / logicCellSize;
-    }
+    mousePosCrafting = (inventory->mousePosWindow.y + gap / 2 - marginTop) / logicCellSize;
 
-    if (mousePosCrafting > cellCount - 1)
+    if (mousePosCrafting > cellCount)
     {
       mousePosCrafting = cellCount - 1;
     }
-
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    
+    sf::Event event;
+    while (window.pollEvent(event))
     {
-      GetClickPos();
-      inventory->StoreItem(craftableTypes[selectedPosition], *worldGrid);
+      switch (event.type)
+      {
+      case sf::Event::MouseButtonPressed:
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && isAccessible)
+        {
+          GetClickPos();
+          for (int x = 0; x < inventory->xCellCount; x++)
+          {
+            for (int y = 0; y < inventory->yCellCount; y++)
+            {
+              if (inventory->container[x][y].itemID == 14)
+              {
+                if (selectedPosition == 0)
+                {
+                  inventory->container[x][y].quantity -= 5;
+                }
+                else if (selectedPosition == 1)
+                {
+                  inventory->container[x][y].quantity -= 1;
+                }
+                inventory->StoreItem(craftableTypes[selectedPosition], *worldGrid);
+                break;
+              }
+            }
+          }
+        }
+      }
     }
+
   }
+
+  inCrafting = false;
 
   for (int i = 0; i < cellCount; i++)
   {
     craftingContainer[i].itemSprite.setPosition(craftingContainer[i].renderBody.getPosition());
     craftingContainer[i].itemSprite.setScale(2, 2);
 
-    if (selectedPosition == i)
+    if (craftingContainer[i].logicRect.contains(sf::Vector2f(inventory->mousePosWindow)))
     {
-      craftingContainer[i].renderBody.setOutlineColor(sf::Color::Red);
+      inCrafting = true;
       craftingContainer[i].renderBody.setOutlineThickness(4);
     }
     else
     {
-      craftingContainer[i].renderBody.setOutlineColor(sf::Color::Black);
       craftingContainer[i].renderBody.setOutlineThickness(2);
     }
 
-    if (craftingContainer[i].logicRect.contains(sf::Vector2f(inventory->mousePosWindow)))
-    {
-      inCrafting = true;
-    }
-    else
-    {
-      inCrafting = false;
-    }
   }
 }
 
@@ -111,9 +139,19 @@ void CraftingMenu::Render(sf::RenderWindow& window)
 {
   for (int i = 0; i < cellCount; i++)
   {
-    window.draw(craftingContainer[i].renderBody);
-    window.draw(craftingContainer[i].logicBody);
-    window.draw(craftingContainer[i].itemSprite);
+    if (isAccessible)
+    {
+      if (workbenchCrafrable)
+      {
+        window.draw(craftingContainer[i].renderBody);
+        window.draw(craftingContainer[i].itemSprite);
+      }
+      else if (woodenPlankCrafrable)
+      {
+        window.draw(craftingContainer[1].renderBody);
+        window.draw(craftingContainer[1].itemSprite);
+      }
+    }
   }
 }
 

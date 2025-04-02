@@ -11,14 +11,14 @@ class WorldGrid;
 class Player
 {
 public:
-  int width = 25; // one tile is 16 wide, so it's a little more than one
-  int height = 40; //  one tile is 16 tall, so it's a little more than two
+  int width = 25; // One tile is 16 wide, so it's a little more than one
+  int height = 40; // One tile is 16 tall, so it's a little more than two
   sf::RectangleShape body; // Acts kinda like a hitbox visualisation
   sf::Sprite sprite; // Actual player texture drawn on screen
   sf::Texture texture;
   float gravity = 0.f; // Initialized here to zero, because i had problems with the player falling through the map and now I don't wanna touch it cuz it would definitely break everyting
   bool colliding;
-  bool bodyOutOfCamBounds; // set to true when the player goes a certain distance from the view center
+  bool bodyOutOfCamBounds; // Set to true when the player goes a certain distance from the view center
 
   int animFrameCount;
   int currentAnimFrame;
@@ -50,8 +50,6 @@ public:
 
   int xViewMoveCenterOffset; // What distance from the center of the view does the player need to be in order for the view to start moving
   int yViewMoveCenterOffset;
-
-  sf::Vertex contactNormalLine[2]; // Draws the normal vector of a collision
 
   sf::RectangleShape groundCheckRectLeft; // When this object collides with the ground, the player is considered grounded
   sf::RectangleShape groundCheckRectRight; // Or this one

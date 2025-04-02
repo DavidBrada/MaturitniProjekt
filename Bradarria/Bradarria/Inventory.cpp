@@ -38,12 +38,6 @@ void Inventory::Load()
       container[x][y].renderBody.setFillColor(sf::Color::Blue);
       container[x][y].renderBody.setOutlineThickness(2);
       container[x][y].renderBody.setOutlineColor(sf::Color::White);
-
-      // These won't be rednered in release DELETE LATER
-      container[x][y].logicBody.setPosition(sf::Vector2f((x * logicCellSize + margin) - gap / 2, (y * logicCellSize + margin) - gap / 2));
-      container[x][y].logicBody.setOutlineThickness(2);
-      container[x][y].logicBody.setOutlineColor(sf::Color::Magenta);
-      container[x][y].logicBody.setFillColor(sf::Color::Transparent);
     }
   }
 }
@@ -73,12 +67,22 @@ void Inventory::Update(WorldGrid& worldGrid, sf::RenderWindow& window)
     }
   }
 
+  
+
   for (int x = 0; x < xCellCount; x++)
   {
     for (int y = 0; y < yCellCount; y++)
     {
       container[x][y].itemSprite.setPosition(container[x][y].renderBody.getPosition());
       container[x][y].itemSprite.setScale(2, 2);
+      if (mousePosInventory.x == x && mousePosInventory.y == y)
+      {
+        container[mousePosInventory.x][mousePosInventory.y].renderBody.setOutlineThickness(4);
+      }
+      else
+      {
+        container[mousePosInventory.x][mousePosInventory.y].renderBody.setOutlineThickness(3);
+      }
 
       if (container[x][y].quantity == 0)
       {
@@ -163,6 +167,7 @@ void Inventory::StoreItem(int type, WorldGrid& worldGrid)
         {
           if (container[x][y].id == i)
           {
+            container[x][y].itemID = type;
             SetSprite(type, x, y, worldGrid.tileAtlasTexture, worldGrid.atlasTiles);
             container[x][y].quantity++;
           }
@@ -186,7 +191,6 @@ void Inventory::Render(sf::RenderWindow& window)
       for (int y = 0; y < yCellCount; y++)
       {
         window.draw(container[x][y].renderBody);
-        //window.draw(container[x][y].logicBody);
         window.draw(container[x][y].itemSprite);
       }
     }
@@ -197,7 +201,6 @@ void Inventory::Render(sf::RenderWindow& window)
     {
       int y = 0;
       window.draw(container[x][y].renderBody);
-      //window.draw(container[x][y].logicBody);
       window.draw(container[x][y].itemSprite);
     }
   }
