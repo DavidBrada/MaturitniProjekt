@@ -49,7 +49,7 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
   // Mouse positions and world info
   ss << "Window: " << worldGrid.mousePosWindow.x << ", " << worldGrid.mousePosWindow.y << std::endl
     << "View: " << worldGrid.mousePosView.x << ", " << worldGrid.mousePosView.y << std::endl
-    << "Grid: " << worldGrid.mousePosGrid.x << ", " << worldGrid.mousePosGrid.y << std::endl 
+    << "Grid: " << worldGrid.mousePosGrid.x << ", " << worldGrid.mousePosGrid.y << std::endl
     << "Block: " << worldGrid.blocks[hoveredTile.type] << std::endl
     << "Collision: " << collisionStatus << std::endl
     << "World seed: " << worldGrid.worldSeed;

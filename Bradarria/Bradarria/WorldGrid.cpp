@@ -1,4 +1,4 @@
-﻿#include "WorldGrid.h"
+#include "WorldGrid.h"
 
 void WorldGrid::Load()
 {
@@ -61,7 +61,7 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
     worldMap[xPos][yPos].mineable = true;
     worldMap[xPos][yPos].timeToMine = 0.5f;
     break;
-    
+
   case grass:
     worldMap[xPos][yPos].hasCollision = true;
     worldMap[xPos][yPos].mineable = true;
@@ -244,7 +244,7 @@ void WorldGrid::GenerateTerrain()
       {
         playerSpawnPos = sf::Vector2i(x * tileSize, (y - 5) * tileSize);
       }
-      
+
       if (y < terrainHeightValues[x])
       {
         PlaceTile(air, x, y, tileMap);
@@ -284,7 +284,8 @@ void WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileS
 
   if (tileSelector->clickPosition.x == mousePosGrid.x &&
       tileSelector->clickPosition.y == mousePosGrid.y &&
-      tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].mineable){
+      tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].mineable)
+  {
 
     if (tileSelector->mineClock.getElapsedTime().asSeconds() >= tileSelector->timeToMine && !inventory->inInventory && (!craftingMenu->inCrafting || !craftingMenu->isAccessible))
     {
@@ -356,7 +357,7 @@ void WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileS
         inventory->StoreItem(tileSelector->minedType, *this);
       }
 
-      
+
       if (mousePosGrid.y > terrainHeightValues[mousePosGrid.x])
       {
         PlaceTile(dirtBackground, mousePosGrid.x, mousePosGrid.y, tileMap);
@@ -381,7 +382,7 @@ void WorldGrid::InitializeCave()
 {
   for (int x = 0; x < mapWidth; x++)
   {
-    
+
     for (int y = terrainHeightValues[x] + 10; y < mapHeight - 10; y++)
     {
       (rand() % 100 < 45) ? PlaceTile(1, x, y, tileMap) : PlaceTile(0, x, y, tileMap); // 45% solid, 55% air
@@ -555,7 +556,8 @@ void WorldGrid::PlaceTree(int x, int yGround)
       int branchType;
       branchType = rand() % 2;
 
-      if (rand() % 2 < 1){
+      if (rand() % 2 < 1)
+      {
         // Flip the branch texture horizontally
         tileMap[x - 1][y].sprite.setOrigin(tileSize, 0);
         tileMap[x - 1][y].sprite.setScale(-1.f, 1.f);

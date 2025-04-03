@@ -67,7 +67,7 @@ void Inventory::Update(WorldGrid& worldGrid, sf::RenderWindow& window)
     }
   }
 
-  
+
 
   for (int x = 0; x < xCellCount; x++)
   {

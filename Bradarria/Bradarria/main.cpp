@@ -64,12 +64,12 @@ int main()
       worldSettings.Rneder(window);
       window.display();
     }
-    else if(sceneManager.currentScene == sceneManager.game)
+    else if (sceneManager.currentScene == sceneManager.game)
     {
       if (!isLoaded)
       {
         LoadingScreen loadingScreen;
-        
+
         // Display loading screen before generating the world
         window.clear(sf::Color(135, 206, 235));
         window.draw(loadingScreen.sprite);
@@ -100,12 +100,12 @@ int main()
         craftingMenu = new CraftingMenu();
         craftingMenu->Load(worldGrid);
 
-        
+
         isLoaded = true;
       }
 
       sf::Vector2i mousePosScreen = sf::Mouse::getPosition();
-      
+
       // Delta Time
       dt = dtClock.restart().asSeconds();
 
@@ -275,7 +275,7 @@ int main()
       ui->Render(window, *inventory);
 
       window.display();
-    
+
 #pragma endregion
 
       if (exitGame)

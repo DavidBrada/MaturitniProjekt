@@ -8,7 +8,7 @@ void CraftingMenu::Load(WorldGrid*& worldGrid)
     craftingContainer[i].renderBody.setSize(sf::Vector2f(renderCellSize, renderCellSize));
     craftingContainer[i].logicBody.setSize(sf::Vector2f(logicCellSize, logicCellSize));
   }
-  
+
   craftingContainer.resize(cellCount);
   for (int i = 0; i < cellCount; i++)
   {
@@ -21,7 +21,7 @@ void CraftingMenu::Load(WorldGrid*& worldGrid)
     craftingContainer[i].logicBody.setFillColor(sf::Color::Transparent);
     craftingContainer[i].logicBody.setOutlineThickness(2);
     craftingContainer[i].logicBody.setOutlineColor(sf::Color::Green);
-    
+
     craftingContainer[i].logicRect.top = craftingContainer[i].logicBody.getPosition().y;
     craftingContainer[i].logicRect.left = craftingContainer[i].logicBody.getPosition().x;
     craftingContainer[i].logicRect.height = logicCellSize;
@@ -65,7 +65,7 @@ void CraftingMenu::Update(WorldGrid*& worldGrid, Inventory*& inventory, sf::Rend
     {
       mousePosCrafting = cellCount - 1;
     }
-    
+
     sf::Event event;
     while (window.pollEvent(event))
     {

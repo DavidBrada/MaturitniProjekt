@@ -53,7 +53,7 @@ struct MainMenu
     playButtonTextHitBox = playButtonText.getGlobalBounds();
     playButtonText.setOrigin(sf::Vector2f(playButtonText.getPosition().x + playButtonTextHitBox.width / 2, playButtonText.getPosition().y + playButtonTextHitBox.height / 2));
     playButtonText.setPosition(sf::Vector2f(playButton.getPosition().x + playButton.getSize().x / 2, playButton.getPosition().y + playButton.getSize().y / 4));
-    
+
     playButtonText.setFillColor(sf::Color::Black);
     playButtonText.setOutlineColor(sf::Color::Yellow);
 

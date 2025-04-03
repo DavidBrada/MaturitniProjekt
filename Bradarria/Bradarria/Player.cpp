@@ -78,11 +78,11 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
       sprite.setTextureRect(sf::IntRect(currentAnimFrame * width, height, width, height));
 
 
-    currentAnimFrame++;
-    animClock.restart();
+      currentAnimFrame++;
+      animClock.restart();
     }
   }
-  
+
 
   canPlace = false;
   tileSelectorBody.setOutlineColor(sf::Color::Red);
@@ -199,7 +199,7 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
         // Put tiles that are colliding with the player and the distance from the player into a vector
         if (IsColliding(body, worldGrid.tileMap[x][y].shape, contactPoint, contactNormal, time, deltaTime))
         {
-          z.push_back({ sf::Vector2i(x, y), time});
+          z.push_back({ sf::Vector2i(x, y), time });
           colliding = true;
         }
       }
@@ -208,9 +208,9 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
 
   // Sort the tiles in the vector by the calculated distance (closest tiles to the player are first)
   std::sort(z.begin(), z.end(), [](const std::pair<sf::Vector2i, float>& a, const std::pair<sf::Vector2i, float>& b)
-  {
-    return a.second < b.second;
-  });
+            {
+              return a.second < b.second;
+            });
 
   // Check for collisions in sorted order
   for (auto j : z)
@@ -287,7 +287,7 @@ bool Player::InArea(sf::RectangleShape& other, int maxDistance)
 bool Player::IsColliding(const sf::RectangleShape& cBody, const sf::RectangleShape& target, sf::Vector2f& contactPoint,
                          sf::Vector2f& contactNormal, float& contactTime, float deltaTime)
 {
-  if(velocity.x == 0 && velocity.y == 0) return false;
+  if (velocity.x == 0 && velocity.y == 0) return false;
 
   sf::RectangleShape expandedTarget;
   expandedTarget.setPosition(target.getPosition().x - cBody.getSize().x / 2, target.getPosition().y - cBody.getSize().y / 2);
@@ -311,13 +311,13 @@ bool Player::RayTest(const sf::Vector2f& rayOrigin, const sf::Vector2f& rayDir, 
   float t_farY = (target.getPosition().y + target.getSize().y - rayOrigin.y) / rayDir.y;
   sf::Vector2f t_far = sf::Vector2f(t_farX, t_farY);
 
-  if(std::isnan(t_far.y) || std::isnan(t_far.x)) return false;
-  if(std::isnan(t_near.y) || std::isnan(t_near.x)) return false;
+  if (std::isnan(t_far.y) || std::isnan(t_far.x)) return false;
+  if (std::isnan(t_near.y) || std::isnan(t_near.x)) return false;
 
-  if(t_near.x > t_far.x) std::swap(t_near.x, t_far.x);
-  if(t_near.y > t_far.y) std::swap(t_near.y, t_far.y);
+  if (t_near.x > t_far.x) std::swap(t_near.x, t_far.x);
+  if (t_near.y > t_far.y) std::swap(t_near.y, t_far.y);
 
-  if(t_near.x > t_far.y || t_near.y > t_far.x) return false;
+  if (t_near.x > t_far.y || t_near.y > t_far.x) return false;
 
   t_hit_near = std::max(t_near.x, t_near.y);
   float t_hit_far = std::min(t_far.x, t_far.y);
@@ -357,7 +357,7 @@ void Player::Draw(sf::RenderWindow& window, WorldGrid& worldGrid)
 
   //window.draw(body);
   window.draw(sprite);
-  
+
   /*
   window.draw(groundCheckRectLeft);
   window.draw(groundCheckRectRight);

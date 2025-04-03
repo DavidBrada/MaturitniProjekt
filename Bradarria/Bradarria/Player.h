@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "SFML/Graphics.hpp"
 #include "Tile.h"
 #include "WorldGrid.h"

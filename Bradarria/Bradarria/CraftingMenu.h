@@ -1,6 +1,5 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Item.h"
 #include "WorldGrid.h"
 #include "CraftingCell.h"
 
@@ -12,7 +11,7 @@ public:
   std::vector<CraftingCell> craftingContainer;
 
   static const int cellCount = 2;
-  int craftableTypes[cellCount] = {8, 15};
+  int craftableTypes[cellCount] = { 8, 15 };
 
   // These are hard-coded because I don't wanna rewrite the entire program
   bool workbenchCrafrable = false;

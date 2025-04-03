@@ -11,7 +11,7 @@ void WorldSettings::Update(sf::RenderWindow& window, SceneManager& sceneManager)
       if (std::isdigit(event.text.unicode) && playerInput.getSize() < 9)
       {
         playerInput += event.text.unicode;
-        playerText.setString( "Seed: " + playerInput);
+        playerText.setString("Seed: " + playerInput);
       }
     }
     if (event.type == sf::Event::KeyPressed)
