@@ -3,7 +3,7 @@
 
 void UI::Initialize()
 {
-  font.loadFromFile("assets/fonts/SegUIVar.ttf");
+  font.loadFromFile("assets/fonts/PixelifySans-VariableFont_wght.ttf");
   gridInfoText.setCharacterSize(24);
   gridInfoText.setFillColor(sf::Color(255, 10, 255));
   gridInfoText.setFont(font);
@@ -25,13 +25,19 @@ void UI::Initialize()
   playerInfoText.setCharacterSize(30);
   playerInfoText.setFillColor(sf::Color::White);
   playerInfoText.setFont(font);
-  playerInfoText.setPosition(1500.f, 320.f);
+  playerInfoText.setPosition(1500.f, 520.f);
   playerInfoText.setString(" NO TEXT ");
 
   inventoryText.setCharacterSize(16);
   inventoryText.setFillColor(sf::Color::Yellow);
   inventoryText.setFont(font);
   inventoryText.setString(" NO TEXT ");
+
+  keyBindText.setCharacterSize(34);
+  keyBindText.setFillColor(sf::Color::Red);
+  keyBindText.setFont(font);
+  keyBindText.setPosition(1450.f, 20.f);
+  keyBindText.setString(" NO TEXT ");
 }
 
 void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player, Inventory& inventory, CraftingMenu& craftingMenu)
@@ -56,11 +62,7 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
   ss.str(std::string());
 
   // Controls
-  ss << "Move: A, D" << std::endl
-    << "Jump: SPACE" << std::endl
-    << "Select blocks: 1, 2, 3" << std::endl
-    << "Debug info: TAB" << std::endl
-    << "Close window: ESC";
+  ss << "Show keybinds: K";
   controlsText.setString(ss.str());
   ss.str(std::string());
 
@@ -74,18 +76,24 @@ void UI::Update(WorldGrid& worldGrid, TileSelector& tileSelector, Player& player
     << "Jumping: " << player.jumping << std::endl
     << "Input vel X: " << player.inputVelocity.x << std::endl
     << "Click Pos: " << tileSelector.clickPosition.x << ", " << tileSelector.clickPosition.y << std::endl
-    << "Last mined: " << worldGrid.blocks[tileSelector.minedType] << std::endl
-    << "In crafting: " << craftingMenu.inCrafting << std::endl
     << "Crafting selected pos: " << craftingMenu.selectedPosition << std::endl
-    << "In inventory: " << inventory.inInventory << std::endl
     << "Inventory pos: " << inventory.mousePosInventory.x << ", " << inventory.mousePosInventory.y << std::endl
     << "Selected item ID: " << inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].itemID << std::endl
-    << "Inventory click pos: " << inventory.selectedPosition.x << ", " << inventory.selectedPosition.y << "; ID: " << inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].id << std::endl
+    << "Inv. click pos: " << inventory.selectedPosition.x << ", " << inventory.selectedPosition.y << "; ID: " << inventory.container[inventory.selectedPosition.x][inventory.selectedPosition.y].id << std::endl
     << "Mining: " << player.mining << std::endl;
 
   playerInfoText.setString(ss.str());
   ss.str(std::string());
 
+  ss << "Move: A, D" << std::endl
+    << "Jump: SPACE" << std::endl
+    << "Build / Destroy: LMB" << std::endl
+    << "Inventory: I" << std::endl
+    << "Navigate inventory: 1, 2, 3..." << std::endl
+    << "Debug info: TAB" << std::endl
+    << "Exit game: ESC" << std::endl;
+  keyBindText.setString(ss.str());
+  ss.str(std::string());
 }
 
 void UI::UpdateInventory(Inventory& inventory, sf::RenderWindow& window)
@@ -133,8 +141,15 @@ void UI::Render(sf::RenderWindow& window, Inventory& inventory)
   {
     window.draw(gridInfoText);
     window.draw(playerInfoText);
-    window.draw(controlsText);
     window.draw(uiText);
+  }
+  if (showKeyBinds)
+  {
+    window.draw(keyBindText);
+  }
+  else
+  {
+    window.draw(controlsText);
   }
 }
 

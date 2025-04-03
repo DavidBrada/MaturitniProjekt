@@ -16,7 +16,7 @@ public:
   sf::RectangleShape body; // Acts kinda like a hitbox visualisation
   sf::Sprite sprite; // Actual player texture drawn on screen
   sf::Texture texture;
-  float gravity = 0.f; // Initialized here to zero, because i had problems with the player falling through the map and now I don't wanna touch it cuz it would definitely break everyting
+  float gravity = 0.f; // Initialized here to zero, because  the player was falling through the map and now I don't wanna touch it cuz it would definitely break everyting
   bool colliding;
   bool bodyOutOfCamBounds; // Set to true when the player goes a certain distance from the view center
 

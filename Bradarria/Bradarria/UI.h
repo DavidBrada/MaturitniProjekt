@@ -15,10 +15,11 @@ class UI
   sf::Text controlsText;
   sf::Text playerInfoText;
   sf::Text inventoryText;
+  sf::Text keyBindText;
 
 public:
   bool visible = false;
-  float timeStep = 0.1f; // Time step of UI in seconds, it's probably useless tho
+  bool showKeyBinds = false;
 
 public:
   void Initialize();

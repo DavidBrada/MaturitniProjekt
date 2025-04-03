@@ -57,6 +57,23 @@ void WorldSettings::Update(sf::RenderWindow& window, SceneManager& sceneManager)
       sceneManager.currentScene = sceneManager.game;
     }
   }
+  else if (backButtonHitBox.contains(mousePos))
+  {
+    if (animationClock.getElapsedTime().asSeconds() >= 0.01f && backButtonText.getScale().x < 1.2f)
+    {
+      backButtonText.setScale(backButtonText.getScale().x + transformStep, backButtonText.getScale().y + transformStep);
+      if (backButtonText.getOutlineThickness() < 6.f)
+      {
+        backButtonText.setOutlineThickness(backButtonText.getOutlineThickness() + 1.f);
+      }
+      animationClock.restart();
+    }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    {
+      sceneManager.currentScene = sceneManager.mainMenu;
+    }
+  }
   else
   {
     if (animationClock.getElapsedTime().asSeconds() >= 0.01f && startButtonText.getScale().x > 1.f)
@@ -68,14 +85,26 @@ void WorldSettings::Update(sf::RenderWindow& window, SceneManager& sceneManager)
       }
       animationClock.restart();
     }
+
+    if (animationClock.getElapsedTime().asSeconds() >= 0.01f && backButtonText.getScale().x > 1.f)
+    {
+      backButtonText.setScale(backButtonText.getScale().x - transformStep, backButtonText.getScale().y - transformStep);
+      if (backButtonText.getOutlineThickness() > 0.f)
+      {
+        backButtonText.setOutlineThickness(backButtonText.getOutlineThickness() - 1.f);
+      }
+      animationClock.restart();
+    }
   }
 }
 
 void WorldSettings::Rneder(sf::RenderWindow& window)
 {
   window.draw(bgSprite);
-  window.draw(mainBody);
+  //window.draw(mainBody);
+  window.draw(inputBGSprite);
   window.draw(playerText);
   //window.draw(startButton);
   window.draw(startButtonText);
+  window.draw(backButtonText);
 }

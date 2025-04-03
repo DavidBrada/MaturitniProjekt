@@ -110,7 +110,8 @@ void WorldGrid::PlaceTile(int type, int xPos, int yPos, std::vector<std::vector<
     worldMap[xPos][yPos].mineable = true;
     worldMap[xPos][yPos].timeToMine = 1.5f;
     break;
-  case branchTrunk:
+  case branchTrunkLeft:
+  case branchTrunkRight:
     worldMap[xPos][yPos].hasCollision = false;
     worldMap[xPos][yPos].mineable = true;
     worldMap[xPos][yPos].timeToMine = 1.2f;
@@ -290,7 +291,7 @@ void WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileS
       tileSelector->minedType = tileMap[tileSelector->selectorPosition.x / tileSize][tileSelector->selectorPosition.y / tileSize].type;
 
       // This handles tree destruction logic
-      if (tileSelector->minedType == treeTrunk || tileSelector->minedType == treeBottom || tileSelector->minedType == branchTrunk)
+      if (tileSelector->minedType == treeTrunk || tileSelector->minedType == treeBottom || tileSelector->minedType == branchTrunkLeft || tileSelector->minedType == branchTrunkRight)
       {
         bool isTreeTop = false;
         for (int i = 0; i < 15; i++)
@@ -307,13 +308,14 @@ void WorldGrid::MineTile(Player* player, Settings& settings, TileSelector* tileS
             {
               PlaceTile(air, mousePosGrid.x, mousePosGrid.y - i, tileMap);
             }
-            else if (tileMap[mousePosGrid.x][mousePosGrid.y - i].type == branchTrunk)
+            else if (tileMap[mousePosGrid.x][mousePosGrid.y - i].type == branchTrunkLeft || tileMap[mousePosGrid.x][mousePosGrid.y - i].type == branchTrunkRight)
             {
               for (int j = -1; j < 2; j++)
               {
                 if (tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == branch1 ||
                     tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == branch2 ||
-                    tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == branchTrunk)
+                    tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == branchTrunkLeft ||
+                    tileMap[mousePosGrid.x + j][mousePosGrid.y - i].type == branchTrunkRight)
                 {
                   PlaceTile(air, mousePosGrid.x + j, mousePosGrid.y - i, tileMap);
                 }
@@ -548,13 +550,13 @@ void WorldGrid::PlaceTree(int x, int yGround)
 
   for (int y = yGround - 1; y > yGround - treeHeight + 2; y--)
   {
-    if (rand() % 100 < 80)
+    if (rand() % 100 < 80 && (tileMap[x][y + 1].type != branchTrunkLeft && tileMap[x][y + 1].type != branchTrunkRight))
     {
       int branchType;
       branchType = rand() % 2;
 
       if (rand() % 2 < 1){
-        // Flip the branch and trunk texture horizontally
+        // Flip the branch texture horizontally
         tileMap[x - 1][y].sprite.setOrigin(tileSize, 0);
         tileMap[x - 1][y].sprite.setScale(-1.f, 1.f);
 
@@ -567,8 +569,7 @@ void WorldGrid::PlaceTree(int x, int yGround)
           PlaceTile(branch2, x - 1, y, tileMap);
         }
 
-        tileMap[x][y].sprite.setOrigin(tileSize, 0);
-        tileMap[x][y].sprite.setScale(-1.f, 1.f);
+        PlaceTile(branchTrunkLeft, x, y, tileMap);
       }
       else
       {
@@ -580,9 +581,10 @@ void WorldGrid::PlaceTree(int x, int yGround)
         {
           PlaceTile(branch2, x + 1, y, tileMap);
         }
+
+        PlaceTile(branchTrunkRight, x, y, tileMap);
       }
 
-      PlaceTile(branchTrunk, x, y, tileMap);
     }
   }
 }
@@ -602,7 +604,7 @@ void WorldGrid::GenerateCoal()
     {
       float noiseValue = coalNoise.GetNoise((float)x, (float)y);
 
-      if ((tileMap[x][y].type == stone || tileMap[x][y].type == dirt) && noiseValue > 0.8f)
+      if ((tileMap[x][y].type == stone || tileMap[x][y].type == dirt) && noiseValue > 0.9f)
       {
         PlaceTile(coal, x, y, tileMap);
       }

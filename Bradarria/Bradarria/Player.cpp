@@ -144,6 +144,12 @@ void Player::Update(float& deltaTime, WorldGrid& worldGrid, sf::View& view, sf::
     }
   }
 
+  if (body.getPosition().y > worldGrid.mapHeight * worldGrid.tileSize || body.getPosition().x > worldGrid.mapWidth * worldGrid.tileSize || body.getPosition().x < 0)
+  {
+    body.setPosition(sf::Vector2f(worldGrid.playerSpawnPos.x, worldGrid.playerSpawnPos.y));
+    view.setCenter(body.getPosition());
+  }
+
   colliding = false;
 
   // Gravity

@@ -85,10 +85,11 @@ int main()
         tileSelector->Initialize(*worldGrid);
         ui = new UI();
         ui->Initialize();
-        player = new Player(worldGrid->playerSpawnPos.x, worldGrid->playerSpawnPos.y);
 
         inventory = new Inventory();
         inventory->Initialize();
+
+        player = new Player(worldGrid->playerSpawnPos.x, worldGrid->playerSpawnPos.y);
 
         view = new sf::View();
         view->setSize(settings.windowWidth, settings.windowHeight);
@@ -150,6 +151,10 @@ int main()
           else if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
           {
             inventory->open = !inventory->open;
+          }
+          else if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+          {
+            ui->showKeyBinds = !ui->showKeyBinds;
           }
           else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
           {
